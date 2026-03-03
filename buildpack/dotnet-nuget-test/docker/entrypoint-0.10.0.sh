@@ -6,7 +6,7 @@ set -e
 # Uses Google buildpacks builder via private ACR mirror
 # (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
 #
-# VERSION: 0.11.0 — credentials come exclusively from K8s Secret volume mount
+# VERSION: 0.10.0 — credentials come exclusively from K8s Secret volume mount
 # at /mnt/proxy-config/. No env-var shims.
 #
 # Two runtime modes (auto-detected):
@@ -26,13 +26,14 @@ set -e
 #   pkg-nuget-password      — NuGet proxy password (optional)
 #
 # Image resolution (matching buildpack-build.ts):
-#   Original images use choreoprivateacr.azurecr.io (PDP default).
-#   _resolve_image rewrites them via oci-buildpacks-url from the K8s Secret.
+#   Original images use choreocontrolplane.azurecr.io (production default).
+#   _resolve_image rewrites them via oci-buildpacks-url from the K8s Secret,
+#   e.g. choreoprivateacr.azurecr.io → choreoprivateacr.azurecr.io/buildpacks/...
 # =============================================================================
 
 echo "========================================"
 echo "  E2E pack build — NuGet Proxy Flow"
-echo "  v0.11.0 (K8s Secret mount only)"
+echo "  v0.10.0 (K8s Secret mount only)"
 echo "========================================"
 
 # ── Detect container runtime ─────────────────────────────────────────────────
@@ -205,11 +206,11 @@ echo "── pack build ──────────────────�
 IMAGE="nuget-proxy-e2e-test"
 fullPath="/workspace/app"
 
-# Original images — PDP defaults (choreoprivateacr.azurecr.io).
+# Original images — production defaults from config-loader (choreocontrolplane.azurecr.io).
 # _resolve_image will rewrite these via oci-buildpacks-url from the K8s Secret.
 # (matches buildpack-build.ts lines 182-184)
-_ORIGINAL_RUN_IMAGE="choreoprivateacr.azurecr.io/buildpacks/google-22/run:2941124e39ef19f49aabac4257daf5f652805e81"
-_ORIGINAL_BUILDER="choreoprivateacr.azurecr.io/buildpacks/builder:google-22"
+_ORIGINAL_RUN_IMAGE="choreocontrolplane.azurecr.io/buildpacks/google-22/run:2941124e39ef19f49aabac4257daf5f652805e81"
+_ORIGINAL_BUILDER="choreocontrolplane.azurecr.io/buildpacks/builder:google-22"
 
 echo ""
 echo "── Resolve images via _resolve_image ─────────────────────"
