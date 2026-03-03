@@ -3,8 +3,11 @@ set -e
 
 # =============================================================================
 # E2E test of buildpack NuGet proxy flow with actual pack build.
-# Uses Google buildpacks builder (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
+# Uses Google buildpacks builder (gcr.io/buildpacks/builder:google-22)
 # matching the actual Choreo dotnet build flow.
+#
+# VERSION: 0.6.0 — pulls builder/run images directly from gcr.io
+# Requires: cluster has outbound access to gcr.io
 #
 # Two runtime modes (auto-detected):
 #   LOCAL   — Docker socket mounted at /var/run/docker.sock
@@ -21,6 +24,7 @@ set -e
 
 echo "========================================"
 echo "  E2E pack build — NuGet Proxy Flow"
+echo "  (v0.6.0 — gcr.io builder)"
 echo "========================================"
 
 # ── Detect container runtime ─────────────────────────────────────────────────
@@ -68,31 +72,6 @@ else
   echo "Proxy source: none (testing no-op path)"
   mkdir -p /mnt/proxy-config
 fi
-
-# ── OCI credential env vars → proxy-config files ─────────────────────────────
-# Allows passing ACR/registry credentials via env vars instead of K8s secret.
-# Maps OCI_<MIRROR>_URL/USERNAME/PASSWORD → oci-<mirror>-url/username/password
-for mirror in DOCKERHUB CHOREO BUILDPACKS; do
-  mirror_lc=$(echo "$mirror" | tr '[:upper:]' '[:lower:]')
-  url_var="OCI_${mirror}_URL"
-  user_var="OCI_${mirror}_USERNAME"
-  pass_var="OCI_${mirror}_PASSWORD"
-  eval "url=\${$url_var:-}"
-  eval "user=\${$user_var:-}"
-  eval "pass=\${$pass_var:-}"
-  if [ -n "$url" ]; then
-    printf "%s" "$url"  > "/mnt/proxy-config/oci-${mirror_lc}-url"
-    echo "  oci-${mirror_lc}-url      = $url"
-  fi
-  if [ -n "$user" ]; then
-    printf "%s" "$user" > "/mnt/proxy-config/oci-${mirror_lc}-username"
-    echo "  oci-${mirror_lc}-username = $user"
-  fi
-  if [ -n "$pass" ]; then
-    printf "%s" "$pass" > "/mnt/proxy-config/oci-${mirror_lc}-password"
-    echo "  oci-${mirror_lc}-password = (set)"
-  fi
-done
 
 # ═════════════════════════════════════════════════════════════════════════════
 # EXACT shell functions from workflow-resources.ts
@@ -220,16 +199,15 @@ echo ""
 echo "── pack build ──────────────────────────────────────────────"
 
 IMAGE="nuget-proxy-e2e-test"
-# Google buildpacks builder — using private ACR mirror to avoid gcr.io egress
-BUILDER="${BUILDER:-choreoprivateacr.azurecr.io/buildpacks/builder:google-22}"
-RUN_IMAGE="${RUN_IMAGE:-choreoprivateacr.azurecr.io/buildpacks/google-22/run:latest}"
+# Google buildpacks builder — pulls directly from gcr.io
+BUILDER="${BUILDER:-gcr.io/buildpacks/builder:google-22}"
 fullPath="/workspace/app"
 
 # --docker-host=inherit only for podman; for Docker socket, pack finds it automatically
 DOCKER_HOST_FLAG=""
 [ "$RUNTIME" = "podman" ] && DOCKER_HOST_FLAG="--docker-host=inherit"
 
-BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder $BUILDER --run-image $RUN_IMAGE --path $fullPath $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present --trust-builder"
+BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder $BUILDER --path $fullPath $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present --trust-builder"
 
 echo "Command:"
 echo "  $BUILD_CMD"

@@ -3,8 +3,11 @@ set -e
 
 # =============================================================================
 # E2E test of buildpack NuGet proxy flow with actual pack build.
-# Uses Google buildpacks builder (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
-# matching the actual Choreo dotnet build flow.
+# Uses Google buildpacks builder via private ACR mirror
+# (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
+#
+# VERSION: 0.9.0 — pulls builder/run images from private ACR mirror
+# Requires: ACR credentials via OCI_BUILDPACKS_* env vars
 #
 # Two runtime modes (auto-detected):
 #   LOCAL   — Docker socket mounted at /var/run/docker.sock
@@ -15,8 +18,14 @@ set -e
 #   2. Env vars: PROXY_NUGET_URL, PROXY_NUGET_USERNAME, PROXY_NUGET_PASSWORD
 #   3. Neither → no-op path
 #
+# OCI registry env vars (for ACR authentication):
+#   OCI_BUILDPACKS_URL      — ACR registry host (e.g., choreoprivateacr.azurecr.io)
+#   OCI_BUILDPACKS_USERNAME — ACR username
+#   OCI_BUILDPACKS_PASSWORD — ACR password
+#
 # Optional env vars:
-#   BUILDER — override builder image (default: gcr.io/buildpacks/builder:google-22)
+#   BUILDER   — override builder image (default: choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
+#   RUN_IMAGE — override run image (default: choreoprivateacr.azurecr.io/buildpacks/google-22/run:latest)
 # =============================================================================
 
 echo "========================================"
