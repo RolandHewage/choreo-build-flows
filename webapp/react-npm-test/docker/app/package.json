@@ -1,0 +1,12 @@
+{
+  "name": "react-npm-proxy-e2e-test",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "scripts": {
+    "build": "echo 'Building...' && mkdir -p build && cp public/index.html build/index.html"
+  }
+}
