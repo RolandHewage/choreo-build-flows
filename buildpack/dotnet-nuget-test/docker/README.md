@@ -208,6 +208,27 @@ ngrok http 8081
 # e.g., https://abc123.ngrok-free.app/repository/nuget-proxy/index.json
 ```
 
+### Nexus setup for NuGet proxy
+
+1. Nexus UI → **Settings** → **Repositories** → **Create repository** → **nuget (proxy)**
+2. **Name:** `nuget-proxy`, **Protocol version:** `NuGet V3`, **Remote storage:** `https://api.nuget.org/v3/index.json`
+3. Repository URL: `http://localhost:8081/repository/nuget-proxy/index.json`
+4. The `/index.json` suffix is required — NuGet V3 uses a service index endpoint
+
+### Obtaining credentials for NuGet proxy
+
+Use normal Nexus user credentials (username/password). NuGet also supports API keys, but for Nexus proxy the standard user credentials work.
+
+| K8s Secret key | Value |
+|---|---|
+| `pkg-nuget-url` | Nexus NuGet proxy URL (e.g. `http://localhost:8081/repository/nuget-proxy/index.json`) |
+| `pkg-nuget-username` | Nexus username (e.g. `admin`) |
+| `pkg-nuget-password` | Nexus password |
+
+To require authentication: Nexus UI → **Settings** → **Security** → **Anonymous** → disable **Allow anonymous access**.
+
+The CICD generates a `NuGet.Config` XML file with `<packageSourceCredentials>` and mounts it at `/workspace/NuGet.Config` via `_LANG_VOLUMES`.
+
 ## What to check in logs
 
 | Check | Where in output |
