@@ -168,6 +168,12 @@ ngrok http 8081
 # e.g., https://abc123.ngrok-free.app/repository/npm-proxy/
 ```
 
+### Nexus setup for npm proxy
+
+1. Nexus UI → **Settings** → **Repositories** → **Create repository** → **npm (proxy)**
+2. **Name:** `npm-proxy`, **Remote storage:** `https://registry.npmjs.org`
+3. Repository URL: `http://localhost:8081/repository/npm-proxy/`
+
 ## What to check in logs
 
 | Check | Where in output |
