@@ -151,6 +151,27 @@ ngrok http 8081
 # e.g., https://abc123.ngrok-free.app/repository/pypi-proxy/simple/
 ```
 
+### Nexus setup for PyPI proxy
+
+1. Nexus UI → **Settings** → **Repositories** → **Create repository** → **pypi (proxy)**
+2. **Name:** `pypi-proxy`, **Remote storage:** `https://pypi.org/`
+3. Repository URL: `http://localhost:8081/repository/pypi-proxy/simple/`
+4. The trailing `/simple/` is required — pip expects the PEP 503 simple API format
+
+### Obtaining credentials for PyPI proxy
+
+Use normal Nexus user credentials (username/password) — no special token needed.
+
+| K8s Secret key | Value |
+|---|---|
+| `pkg-python-url` | Nexus PyPI proxy URL (e.g. `http://localhost:8081/repository/pypi-proxy/simple/`) |
+| `pkg-python-username` | Nexus username (e.g. `admin`) |
+| `pkg-python-password` | Nexus password |
+
+To require authentication: Nexus UI → **Settings** → **Security** → **Anonymous** → disable **Allow anonymous access**.
+
+The CICD embeds credentials directly in the URL as `scheme://user:pass@host/path` and passes it via `--env PIP_INDEX_URL`.
+
 ## What to check in logs
 
 | Check | Where in output |
