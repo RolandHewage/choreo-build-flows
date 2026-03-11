@@ -1,0 +1,11 @@
+{
+  "name": "vue-npm-proxy-e2e-test",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "vue": "^3.4.0"
+  },
+  "scripts": {
+    "build": "echo 'Building Vue app...' && mkdir -p dist && cp public/index.html dist/index.html"
+  }
+}
