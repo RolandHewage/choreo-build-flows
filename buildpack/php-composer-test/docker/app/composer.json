@@ -1,0 +1,7 @@
+{
+  "name": "example/composer-proxy-e2e-test",
+  "description": "E2E test app for buildpack Composer proxy flow",
+  "require": {
+    "monolog/monolog": "^3.0"
+  }
+}
