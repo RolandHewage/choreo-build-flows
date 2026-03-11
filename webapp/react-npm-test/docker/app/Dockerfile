@@ -1,14 +1,15 @@
 ARG NODE_IMAGE=node:18-alpine
 ARG NGINX_IMAGE=choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim
 FROM $NODE_IMAGE as builder
+RUN npm install -g pnpm
 ARG NPM_REGISTRY
 RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
-RUN npm install -g pnpm
 WORKDIR /app
 COPY . .
-RUN if [ -f "./package-lock.json" ]; then npm install; \
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    if [ -f "./package-lock.json" ]; then npm install; \
     elif [ -f "./yarn.lock" ]; then yarn; \
-    elif [ -f "./pnpm-lock.yaml" ]; then pnpm install;fi
+    elif [ -f "./pnpm-lock.yaml" ]; then pnpm install; fi
 COPY . .
 RUN npm run build
 

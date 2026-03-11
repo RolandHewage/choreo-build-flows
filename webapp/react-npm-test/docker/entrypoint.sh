@@ -166,16 +166,17 @@ _BUILD_ARGS=""
 [ "$_NGINX_IMAGE" != "$_NGINX_DEFAULT" ] && _BUILD_ARGS="$_BUILD_ARGS --build-arg NGINX_IMAGE=$_NGINX_IMAGE"
 [ -n "$_NPM_URL" ] && _BUILD_ARGS="$_BUILD_ARGS --build-arg NPM_REGISTRY=$_NPM_URL"
 
+# Always create .npmrc and pass as BuildKit secret (empty if no token)
+touch /tmp/.npmrc
 if [ -n "$_NPM_TOKEN" ] && [ -n "$_NPM_URL" ]; then
   _NPM_NOSCHEME="${_NPM_URL#*://}"
   _NPM_HOST="${_NPM_NOSCHEME%%/*}"
   echo "//${_NPM_HOST}/:_authToken=${_NPM_TOKEN}" > /tmp/.npmrc
-  _BUILD_ARGS="$_BUILD_ARGS --secret id=npmrc,src=/tmp/.npmrc"
   echo "  Generated /tmp/.npmrc for host: $_NPM_HOST"
 fi
+_BUILD_ARGS="$_BUILD_ARGS --secret id=npmrc,src=/tmp/.npmrc"
 
 echo "  _BUILD_ARGS = $_BUILD_ARGS"
-[ -z "$_BUILD_ARGS" ] && echo "  (no overrides — using Dockerfile defaults)"
 
 # ── podman build ─────────────────────────────────────────────────────────────
 echo ""

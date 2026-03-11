@@ -39,6 +39,12 @@ docker push rolandhewage/webapp-npm-proxy-e2e:0.1.0
 ## Test scenarios — 0.1.0 (K8s Secret mount)
 
 > All config via K8s Secret volume mount. No env vars needed.
+>
+> **Important:** Run scenarios in order (1 → 2 → 3). Nexus caches packages
+> after the first authenticated fetch. If scenario 3 runs before 2, cached
+> packages may cause scenario 2 to falsely pass even when anonymous access
+> is disabled. To re-test scenario 2 after 3, delete and recreate the
+> Nexus `npm-proxy` repository to clear the blob store.
 
 ### Prerequisite — create secrets
 
@@ -207,3 +213,8 @@ ngrok http 8081
 | 2a | Proxy without auth (fake URL) | PASSED (expected `ENOTFOUND` failure confirms proxy redirect) |
 | 2b | Proxy without auth (real Nexus via ngrok) | PASSED |
 | 3 | Proxy with token auth (real Nexus via ngrok) | PASSED |
+
+#### Bugs found during Angular/Vue testing (also apply to React)
+
+1. **`npm install -g pnpm` ordering** — ran after `npm config set registry`, causing pnpm install to fail (E401) when proxy requires auth. Fixed: moved before registry override.
+2. **`.npmrc` secret not mounted in Dockerfile** — `--secret id=npmrc` was passed to `podman build` but the Dockerfile never used `--mount=type=secret,id=npmrc,target=/root/.npmrc`. Token was never available during `npm install`. Fixed: added `--mount=type=secret` to the `npm install` RUN step. Both bugs also existed in the production CICD code (`web-apps.service.ts` and `webapp-build.ts`) and were fixed there too.
