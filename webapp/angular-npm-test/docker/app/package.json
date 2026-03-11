@@ -1,0 +1,14 @@
+{
+  "name": "angular-npm-proxy-e2e-test",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@angular/core": "^17.3.0",
+    "@angular/common": "^17.3.0",
+    "rxjs": "~7.8.0",
+    "zone.js": "~0.14.0"
+  },
+  "scripts": {
+    "build": "echo 'Building Angular app...' && mkdir -p dist && cp public/index.html dist/index.html"
+  }
+}
