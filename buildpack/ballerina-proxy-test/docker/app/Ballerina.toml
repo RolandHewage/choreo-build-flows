@@ -1,0 +1,4 @@
+[package]
+org = "e2etest"
+name = "proxy_test"
+version = "0.1.0"
