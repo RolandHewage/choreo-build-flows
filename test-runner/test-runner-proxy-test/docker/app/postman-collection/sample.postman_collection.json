@@ -1,0 +1,16 @@
+{
+  "info": {
+    "name": "Sample Echo Test",
+    "_postman_id": "sample-echo-test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Echo GET",
+      "request": {
+        "method": "GET",
+        "url": "https://postman-echo.com/get"
+      }
+    }
+  ]
+}
