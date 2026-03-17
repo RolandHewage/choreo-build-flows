@@ -1,0 +1,12 @@
+{
+  "name": "byoc-greeting-service",
+  "version": "1.0.0",
+  "description": "Simple greeting service for BYOC proxy E2E test",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
