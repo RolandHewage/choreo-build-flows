@@ -257,7 +257,7 @@ The CICD generates a `settings.xml` with `<mirror>` + `<servers>` and mounts it 
 | `<servers>` present (auth) | `settings.xml` includes `<server>` block with username |
 | `_MAVEN_BINDING` set | Shows `--volume /tmp/maven-proxy-binding:/platform/bindings/maven-settings` |
 | ACR login succeeded | After `Logging into proxy mirror:` |
-| Maven uses proxy | NOT WORKING — buildpack ignores CNB binding, Maven goes direct to maven.wso2.org |
+| Maven uses proxy | `Downloading from proxy-mirror:` in build log (requires `_MAVEN_USER_SETTINGS` workaround) |
 | Build completes | `E2E TEST PASSED` at the end |
 
 ## Key difference from other tests
@@ -274,17 +274,17 @@ The CICD generates a `settings.xml` with `<mirror>` + `<servers>` and mounts it 
 | Secret keys | `oci-buildpacks-*` + `pkg-maven-*` | `oci-buildpacks-*` + `pkg-maven-*` |
 | Skipped (E2E) | — | Azure SAS token, `mi_buildpack_subnet` network |
 
-### Key finding: Maven mirroring not consumed by MI buildpack
+### Key finding: Maven mirroring works via user settings workaround
 
 `choreo/micro-integrator` does NOT read the Paketo-style CNB binding `settings.xml`.
-Builds succeed even with a fake Maven proxy URL (scenarios 4a, 5a), proving the mirror
-is ignored. The buildpack runs Maven internally without `--settings`.
+However, mounting `settings.xml` at `/home/cnb/.m2/settings.xml` (Maven's default user
+settings path) works — Maven reads it and redirects all downloads through the proxy mirror.
 
-Two issues: (1) `mi-build-preparation.ts` doesn't pass `$_LANG_ENV` to `pack build`
-(only `$_MAVEN_BINDING`), and (2) even if it did, the custom buildpack doesn't read
-`GOOGLE_BUILD_ARGS` or CNB bindings.
+The E2E test includes `_MAVEN_USER_SETTINGS` (`--volume .../settings.xml:/home/cnb/.m2/settings.xml:ro`)
+as a workaround. Production `mi-build-preparation.ts` needs this addition for Maven proxy to work.
 
-For restricted clusters, whitelist: `*.blob.core.windows.net`, `maven.wso2.org`, `repo1.maven.org`
+**Note:** The Nexus Maven proxy must also proxy WSO2 repositories (`maven.wso2.org`,
+`dist.wso2.org`) — not just Maven Central — for MI builds to succeed.
 
 ## Test results
 
@@ -298,6 +298,6 @@ For restricted clusters, whitelist: `*.blob.core.windows.net`, `maven.wso2.org`,
 | 4a | Maven proxy (fake URL) | PASSED — `settings.xml` generated with `<mirror>`, but build succeeded despite fake URL (see key finding above) |
 | 4b | Maven proxy (real Nexus) | PASSED — real ngrok Nexus URL in `settings.xml`, build succeeded, same CNB binding observation |
 | 5a | Maven proxy + auth (fake URL) | PASSED — `settings.xml` with `<mirror>` + `<servers>`, build succeeded despite fake URL |
-| 5b | Maven proxy + auth (real Nexus) | PASSED — real ngrok Nexus URL + auth in `settings.xml`, build succeeded |
+| 5b | Maven proxy + auth (real Nexus) | PASSED — Maven downloads from `proxy-mirror` confirmed in build log, build failed due to WSO2 artifacts not in Nexus proxy (expected — only proxies Maven Central) |
 
 E2E image: `rolandhewage/mi-proxy-e2e:0.1.0`

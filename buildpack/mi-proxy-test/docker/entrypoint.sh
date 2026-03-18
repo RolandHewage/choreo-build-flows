@@ -189,6 +189,12 @@ fi)
 </settings>
 MVNEOF
   _MAVEN_BINDING="--volume /tmp/maven-proxy-binding:/platform/bindings/maven-settings"
+  # Mount settings.xml at Maven's default user settings path so the MI buildpack's
+  # internal Maven invocation picks it up without needing --settings flag.
+  # cnb user (UID 1000) home is /home/cnb — Maven reads ~/.m2/settings.xml by default.
+  mkdir -p /tmp/maven-user-settings
+  cp /tmp/maven-proxy-binding/settings.xml /tmp/maven-user-settings/settings.xml
+  _MAVEN_USER_SETTINGS="--volume /tmp/maven-user-settings/settings.xml:/home/cnb/.m2/settings.xml:ro"
   _LANG_ENV="$_LANG_ENV --env GOOGLE_BUILD_ARGS=--settings=/platform/bindings/maven-settings/settings.xml"
 }
 
@@ -223,11 +229,13 @@ echo "  Resolved builder   : $_BUILDER_IMAGE"
 echo ""
 echo "── Maven proxy setup ──────────────────────────────────────"
 _MAVEN_BINDING=""
+_MAVEN_USER_SETTINGS=""
 _setup_maven_proxy mi
 
 if [ -n "$_MAVEN_BINDING" ]; then
   echo "  Maven proxy: ENABLED"
-  echo "  Binding volume: $_MAVEN_BINDING"
+  echo "  CNB binding volume: $_MAVEN_BINDING"
+  echo "  User settings volume: $_MAVEN_USER_SETTINGS"
   echo "  Lang env: $_LANG_ENV"
   echo ""
   echo "  Generated settings.xml:"
@@ -273,6 +281,7 @@ BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG \
   --volume \"/workspace/volume\":/app/volume:rw \
   --volume \"/workspace/m2\":/m2/repository:rw \
   $_MAVEN_BINDING \
+  $_MAVEN_USER_SETTINGS \
   $_LANG_ENV \
   --env DOCKER_API_VERSION=1.44 \
   --pull-policy if-not-present"
