@@ -31,6 +31,22 @@ docker push rolandhewage/webapp-static-proxy-e2e:0.1.0
 | `oci-choreo-username` | Choreo ACR mirror username | Scenario 2 |
 | `oci-choreo-password` | Choreo ACR mirror password | Scenario 2 |
 
+### Restricted / air-gapped clusters
+
+On clusters where Choreo ACR (`choreoanonymouspullable.azurecr.io`) is blocked, the `podman build`
+will fail pulling the nginx base image even though static files don't need npm. In this case, the
+OCI mirror keys above become **required**:
+
+```bash
+kubectl create secret generic choreo-build-registry-proxy \
+  --from-literal=oci-choreo-url=your-mirror.example.com/choreo-acr-proxy \
+  --from-literal=oci-choreo-username=<username> \
+  --from-literal=oci-choreo-password='<password>'
+```
+
+This rewrites `choreoanonymouspullable.azurecr.io/nginxinc/...` → `your-mirror/choreo-acr-proxy/nginxinc/...`,
+allowing the build to pull the nginx image from the internal mirror.
+
 ---
 
 ## Test scenarios — 0.1.0 (K8s Secret mount)

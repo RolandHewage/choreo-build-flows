@@ -34,6 +34,28 @@ docker push rolandhewage/webapp-npm-proxy-e2e:0.1.0
 | `pkg-npm-url` | npm registry proxy URL (e.g. `https://nexus/repository/npm-proxy/`) | Scenarios 2 & 3 |
 | `pkg-npm-token` | npm registry auth token | Scenario 3 |
 
+### Restricted / air-gapped clusters
+
+On clusters where Docker Hub and/or Choreo ACR are blocked, the `podman build` will fail pulling
+base images (`node:18-alpine` from Docker Hub, `nginx-unprivileged` from Choreo ACR) even if the
+npm proxy is configured correctly. In this case, the OCI mirror keys above become **required**:
+
+```bash
+kubectl create secret generic choreo-build-registry-proxy \
+  --from-literal=oci-dockerhub-url=your-mirror.example.com/docker-hub-proxy \
+  --from-literal=oci-dockerhub-username=<username> \
+  --from-literal=oci-dockerhub-password='<password>' \
+  --from-literal=oci-choreo-url=your-mirror.example.com/choreo-acr-proxy \
+  --from-literal=oci-choreo-username=<username> \
+  --from-literal=oci-choreo-password='<password>' \
+  --from-literal=pkg-npm-url=https://your-mirror.example.com/repository/npm-proxy/ \
+  --from-literal=pkg-npm-token=<token>
+```
+
+This rewrites `node:18-alpine` → `your-mirror/docker-hub-proxy/library/node:18-alpine` and
+`choreoanonymouspullable.azurecr.io/nginxinc/...` → `your-mirror/choreo-acr-proxy/nginxinc/...`,
+allowing the build to pull all images from the internal mirror.
+
 ---
 
 ## Test scenarios — 0.1.0 (K8s Secret mount)
