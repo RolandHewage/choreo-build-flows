@@ -234,6 +234,6 @@ To require authentication: Nexus UI → **Settings** → **Security** → **Anon
 | 3a | OCI mirror + auth (fake URL) | PASSED — `_proxy_login test-runner` attempted login to `my-mirror.example.com`, DNS failed as expected |
 | 3b | OCI mirror + auth (Nexus) | PASSED — `Login Succeeded!`, image resolved to ngrok Docker Hub mirror |
 | 4 | npm proxy | PASSED — `--build-arg NPM_REGISTRY=<url>` in build command, proxy config validated |
-| 5 | npm proxy + auth | PASSED — `.npmrc` generated, `--secret id=npmrc,src=/tmp/.npmrc` in build command, proxy config validated |
+| 5 | npm proxy + auth | PASSED — `.npmrc` generated, `--secret id=npmrc,src=/tmp/.npmrc`, newman installed via Nexus proxy with auth using `--mount=type=secret,id=npmrc` |
 
 E2E image: `rolandhewage/test-runner-proxy-e2e:0.1.0`
