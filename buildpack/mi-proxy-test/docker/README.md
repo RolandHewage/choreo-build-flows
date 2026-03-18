@@ -228,9 +228,48 @@ ngrok http 8081
 
 ### Nexus setup for Maven proxy
 
+MI builds require WSO2-specific Maven artifacts (e.g. `org.apache.ws.commons.axiom.wso2:axiom`,
+`org.wso2.maven:wso2-esb-api-plugin`) that are not available in Maven Central. You need to create
+a Nexus **group** repository that combines Maven Central with WSO2's Maven repositories.
+
+#### Step 1: Create Maven Central proxy
+
 1. Nexus UI → **Settings** → **Repositories** → **Create repository** → **maven2 (proxy)**
-2. **Name:** `maven-proxy`, **Remote storage:** `https://repo1.maven.org/maven2/`
-3. Repository URL: `http://localhost:8081/repository/maven-proxy/`
+2. **Name:** `maven-central`
+3. **Remote storage:** `https://repo1.maven.org/maven2/`
+4. **Version policy:** Release
+5. Click **Create repository**
+
+#### Step 2: Create WSO2 Public proxy
+
+1. **Create repository** → **maven2 (proxy)**
+2. **Name:** `wso2-public`
+3. **Remote storage:** `https://maven.wso2.org/nexus/content/groups/wso2-public/`
+4. **Version policy:** Release
+5. **Layout policy:** Permissive
+6. Click **Create repository**
+
+#### Step 3: Create WSO2 Releases proxy
+
+1. **Create repository** → **maven2 (proxy)**
+2. **Name:** `wso2-releases`
+3. **Remote storage:** `https://maven.wso2.org/nexus/content/repositories/releases/`
+4. **Version policy:** Release
+5. **Layout policy:** Permissive
+6. Click **Create repository**
+
+#### Step 4: Create Maven proxy group
+
+1. **Create repository** → **maven2 (group)**
+2. **Name:** `maven-proxy-group`
+3. **Member repositories** (in this order):
+   - `maven-central`
+   - `wso2-public`
+   - `wso2-releases`
+4. Click **Create repository**
+5. Repository URL: `http://localhost:8081/repository/maven-proxy-group/`
+
+Use the group URL as `pkg-maven-url` in your K8s Secret.
 
 ### Obtaining credentials for Maven proxy
 
@@ -298,6 +337,6 @@ as a workaround. Production `mi-build-preparation.ts` needs this addition for Ma
 | 4a | Maven proxy (fake URL) | PASSED — `settings.xml` generated with `<mirror>`, but build succeeded despite fake URL (see key finding above) |
 | 4b | Maven proxy (real Nexus) | PASSED — real ngrok Nexus URL in `settings.xml`, build succeeded, same CNB binding observation |
 | 5a | Maven proxy + auth (fake URL) | PASSED — `settings.xml` with `<mirror>` + `<servers>`, build succeeded despite fake URL |
-| 5b | Maven proxy + auth (real Nexus) | PASSED — Maven downloads from `proxy-mirror` confirmed in build log, build failed due to WSO2 artifacts not in Nexus proxy (expected — only proxies Maven Central) |
+| 5b | Maven proxy + auth (real Nexus) | PASSED — Maven downloads from `proxy-mirror` confirmed in build log. Initially failed with Maven Central-only proxy (WSO2 artifacts missing). After adding WSO2 repos to Nexus group (`maven-proxy-group`), full build succeeded with `BUILD SUCCESS` |
 
 E2E image: `rolandhewage/mi-proxy-e2e:0.1.0`
