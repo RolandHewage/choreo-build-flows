@@ -1,0 +1,34 @@
+================================================================================
+  Mirror Registry Test — Test Runner (With npm Proxy)
+================================================================================
+
+Pod:    build-and-deploy-20000175730
+Date:   2026-03-24
+Secret: pkg-npm-url, pkg-npm-token (Nexus npm-proxy, NpmToken)
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+npm i -g newman installed 148 packages in 56s through Nexus npm-proxy.
+.npmrc secret mount working — registry URL and auth token injected.
+
+--------------------------------------------------------------------------------
+ngrok Confirmation
+--------------------------------------------------------------------------------
+All requests returned 200 OK, including:
+  - commander
+  - async
+  - colors
+  - tough-cookie
+  - cli-table3
+  - lodash
+  (and 142 more packages)
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- npm proxy integration works end-to-end for test-runner workflow.
+- .npmrc secret mount correctly configures registry and NpmToken auth.
+- Trivy scan failed (exit 1) — vulnerability scan issue, NOT proxy-related.
+  This is a pre-existing issue also seen in the no-proxy baseline.

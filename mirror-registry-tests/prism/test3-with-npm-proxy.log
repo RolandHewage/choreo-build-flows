@@ -1,0 +1,63 @@
+Pod: build-and-deploy-20000175688
+Date: 2026-03-24
+Secret:
+  pkg-npm-url: https://6709-203-94-95-14.ngrok-free.app/repository/npm-proxy/
+  pkg-npm-token: <nexus-npm-token>
+Result: PASSED (build succeeded, npm proxy status unclear — only 2 packages, may have been cached)
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T08:37:46.640Z" level=info msg="waiting for dependency \"environment-setup\"" argo=true
+
+added 2 packages, and audited 3 packages in 317ms
+
+1 moderate severity vulnerability
+Dockerfile generated successfully.
+entrypoint.sh generated successfully.
+Schema files copied successfully.
+prism-traffic-router files copied successfully.
+Login Succeeded!
+STEP 1/12: FROM choreocontrolplane.azurecr.io/stoplight/prism:5
+Trying to pull choreocontrolplane.azurecr.io/stoplight/prism:5...
+Getting image source signatures
+Writing manifest to image destination
+STEP 2/12: RUN chmod +x /usr/local/bin/prism
+--> 5963fc80e6ff
+STEP 3/12: COPY --from=choreocontrolplane.azurecr.io/golang:1.22.4-alpine /usr/local/go /usr/local/go
+Trying to pull choreocontrolplane.azurecr.io/golang:1.22.4-alpine...
+Getting image source signatures
+Writing manifest to image destination
+--> 9ec0bced9f80
+STEP 4/12: ENV PATH="/usr/local/go/bin:${PATH}"
+STEP 5/12: COPY specs/petstore_openapi.yaml /choreo/specs/petstore_openapi.yaml
+STEP 6/12: COPY prism-traffic-router/main.go /choreo/prism-traffic-router/main.go
+STEP 7/12: COPY prism-traffic-router/go.mod /choreo/prism-traffic-router/go.mod
+STEP 8/12: RUN go build -o /choreo/prism-traffic-router/main /choreo/prism-traffic-router/main.go
+STEP 9/12: RUN chmod +x /choreo/prism-traffic-router/main
+STEP 10/12: COPY entrypoint.sh /choreo/entrypoint.sh
+STEP 11/12: RUN chmod +x /choreo/entrypoint.sh
+STEP 12/12: ENTRYPOINT ["/choreo/entrypoint.sh"]
+COMMIT choreo/app-image:latest
+--> 326e41c8088e
+Successfully tagged localhost/choreo/app-image:latest
+326e41c8088eae4d4a16b969e004eb8238af8ce6b19f98219ae37a8026b40562
+REPOSITORY                                     TAG            IMAGE ID      CREATED        SIZE
+localhost/choreo/app-image                     latest         326e41c8088e  1 second ago   482 MB
+choreocontrolplane.azurecr.io/stoplight/prism  5              4ae13bbdf728  16 months ago  174 MB
+choreocontrolplane.azurecr.io/golang           1.22.4-alpine  eeda4b4e3db8  21 months ago  242 MB
+Writing manifest to image destination
+Removed login credentials for choreocontrolplane.azurecr.io
+Loaded image: localhost/choreo/app-image:latest
+Writing docker config contents to /tmp/docker_login_1774341563152/config.json
+DOCKER_CONFIG environment variable is set
+stdout chunk: Removed login credentials for choreodevuserappsalbacore.azurecr.io
+Writing manifest to image destination
+Writing docker config contents to /tmp/docker_login_1774341563152/config.json
+DOCKER_CONFIG environment variable is set
+time="2026-03-24T08:39:31.548Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T08:39:31.605Z" level=info msg="Alloc=16592 TotalAlloc=21547 Sys=31829 NumGC=3 Goroutines=8"
+time="2026-03-24T08:39:31.676Z" level=info msg="Deadline monitor stopped"
+/usr/src/app/status-update.sh: 62: [[: not found
+Curl request succeeded
+Cloning into 'choreo-samples'...
+HEAD is now at 8fd2695 Rebrand "Choreo" to "WSO2 Developer Platform" in user-facing content

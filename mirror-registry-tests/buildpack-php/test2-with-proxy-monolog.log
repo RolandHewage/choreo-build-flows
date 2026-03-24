@@ -1,0 +1,33 @@
+================================================================================
+  Mirror Registry Test — Buildpack PHP (Monolog via Composer Proxy)
+================================================================================
+
+Pod:    build-and-deploy-20000175733
+Date:   2026-03-24
+Secret: pkg-composer-url, pkg-composer-username, pkg-composer-password (Nexus composer-proxy)
+Result: PASSED (ngrok confirmed!)
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+google.php.composer@0.9.1 buildpack detected.
+Composer v2.2.24 installed by buildpack.
+composer install fetched monolog/monolog 3.10.0 and psr/log 3.0.2 through
+the Nexus composer-proxy via ngrok tunnel.
+
+--------------------------------------------------------------------------------
+ngrok Confirmation
+--------------------------------------------------------------------------------
+All requests returned 200 OK:
+  - packages.json
+  - p2/monolog/monolog.json
+  - p2/psr/log.json
+  - psr-log-3.0.2.zip
+  - monolog-monolog-3.10.0.zip
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- Composer proxy integration works end-to-end for PHP buildpack.
+- Secret mount and COMPOSER_MIRROR_URL injection confirmed.
+- All dependencies resolved through proxy with no fallback to packagist.org.

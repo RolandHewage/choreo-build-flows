@@ -1,0 +1,44 @@
+================================================================
+Mirror Registry Test: Buildpack .NET — nuget-test (with proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175708
+Date:   2026-03-24
+Secret: pkg-nuget-url, pkg-nuget-username, pkg-nuget-password (Nexus nuget-proxy)
+Result: PASSED
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+The dotnet-nuget-test project depends on Newtonsoft.Json, which
+was downloaded through the Nexus nuget-proxy. Restore took
+30.14 seconds — significantly longer than the no-proxy baseline
+(845 ms) because the proxy had to fetch and cache the package
+from upstream nuget.org on first access through ngrok.
+
+The exporter step succeeded.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- NuGet config (secret mount) --
+NuGet.Config mounted at /home/cnb/.nuget/NuGet/NuGet.Config
+packageSources: Nexus nuget-proxy URL set from pkg-nuget-url
+packageSourceCredentials: username/password from secret
+
+-- dotnet restore --
+  Determining projects to restore...
+  Restored /workspace/dotnet-nuget-test.csproj (in 30.14 sec).
+
+  Newtonsoft.Json downloaded through Nexus nuget-proxy
+  ngrok logs confirmed: GET /v3/flatcontainer/newtonsoft.json/... 200 OK
+
+-- Build --
+  dotnet-nuget-test -> /workspace/bin/Release/net8.0/dotnet-nuget-test.dll
+
+-- Exporter --
+  Adding layer 'buildpacks/dotnet-core-aspnet-runtime:dotnet-core-aspnet-runtime'
+  Exporter succeeded
+
+================================================================

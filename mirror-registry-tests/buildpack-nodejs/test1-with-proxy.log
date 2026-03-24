@@ -1,0 +1,48 @@
+================================================================
+Mirror Registry Test: Buildpack Node.js (with proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175702
+Date:   2026-03-24
+Secret: pkg-npm-url, pkg-npm-token (Nexus npm-proxy, NpmToken)
+Result: PASSED
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+Node.js project with 60 packages. npm ci installed all packages
+through the Nexus npm-proxy in 8s. ngrok logs confirmed all
+package downloads returned 200 OK. NPM_CONFIG_REGISTRY was set
+and .npmrc was mounted at /home/cnb/.npmrc.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- Proxy config --
+NPM_CONFIG_REGISTRY set to Nexus npm-proxy URL from pkg-npm-url
+.npmrc mounted at /home/cnb/.npmrc
+  //nexus-host/:_authToken=<pkg-npm-token>
+  registry=<pkg-npm-url>
+
+-- npm ci --
+  npm ci --quiet
+  added 60 packages in 8s
+
+-- ngrok traffic (confirmed, all 200 OK) --
+  commander
+  async
+  colors
+  tough-cookie
+  cli-table3
+  body-parser
+  express (and transitive deps)
+  ... all 60 packages fetched through Nexus npm-proxy
+
+-- Build --
+  Build succeeded
+
+-- Exporter --
+  Exporter succeeded
+
+================================================================

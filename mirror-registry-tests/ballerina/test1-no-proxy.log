@@ -1,0 +1,50 @@
+Pod: build-and-deploy-20000175690
+Date: 2026-03-24
+Secret: none (deleted)
+Result: PASSED
+
+--- Key log sections (build-component container) ---
+
+Login Succeeded!
+pulling lifecycleImage
+Trying to pull choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.20.2...
+Writing manifest to image destination
+1d1a5ee7e998f1c095fe5dc366c947fef1c5e5f8bd07452a701faf9d158580b5
+pulling buildpacksBuilderImage
+Trying to pull choreocontrolplane.azurecr.io/choreoipaas/choreo-buildpacks/builder:0.2.107...
+Writing manifest to image destination
+96ab61eeb94475e945ce124ce137fab500901cc7afb6c5634d45768e11d24b5a
+Image 'choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.20.2' will now be used as the lifecycle image
+no Ballerina.toml at /mnt/vol/test-transport-api, using project path
+Trying to pull choreocontrolplane.azurecr.io/choreoipaas/choreo-buildpacks/stacks/alpine/run:0.2.107...
+Writing manifest to image destination
+===> DETECTING
+[detector] choreo-buildpacks/ballerina 1.0.0
+===> BUILDING
+[builder] ---> Ballerina Buildpack
+[builder] ---> Detected Ballerina Version: 2201.8.4
+[builder] ---> Installing JRE
+[builder] openjdk version "17.0.7" 2023-04-18
+[builder] ---> Installing Ballerina
+[builder] Ballerina 2201.8.4 (Swan Lake Update 8)
+[builder] Compiling source
+[builder]     rolandh/transport:0.1.0
+[builder] Resolving dependencies
+[builder] ballerina/crypto:2.6.2 pulled from central successfully
+[builder] ballerina/cache:3.7.1 pulled from central successfully
+[builder] ballerina/constraint:1.5.0 pulled from central successfully
+[builder] ballerina/http:2.10.12 pulled from central successfully
+[builder] Generating executable
+[builder] Generating artifacts
+[builder]     target/bin/transport.jar
+[builder] ---> Creating runtime layer for application JAR
+[builder] ---> Workspace cleanup completed
+===> EXPORTING
+[exporter] Adding layer 'choreo-buildpacks/ballerina:jdk'
+[exporter] Adding layer 'choreo-buildpacks/ballerina:runtime'
+[exporter] Saving choreo/app-image:latest...
+[exporter] *** Images (02f7bc1875e1):
+[exporter]       choreo/app-image:latest
+Successfully built image 'choreo/app-image:latest'
+Removed login credentials for choreocontrolplane.azurecr.io
+Condition not met. Exiting.

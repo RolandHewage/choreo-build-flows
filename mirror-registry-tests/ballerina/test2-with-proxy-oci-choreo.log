@@ -1,0 +1,15 @@
+Pod: build-and-deploy-20000175689
+Date: 2026-03-24
+Secret:
+  oci-choreo-url: fake-mirror.example.com
+  oci-choreo-username: testuser
+  oci-choreo-password: testpass
+Result: PASSED (build failed as expected — correct behavior)
+
+--- Key log sections ---
+
+Login Succeeded!
+Logging into proxy mirror: fake-mirror.example.com
+Error: authenticating creds for "fake-mirror.example.com": pinging container registry fake-mirror.example.com: Get "https://fake-mirror.example.com/v2/": dial tcp: lookup fake-mirror.example.com on 172.19.0.10:53: no such host
+Error: exit status 125
+Error: dependency "build-component" exited with non-zero code: 125

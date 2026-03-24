@@ -1,0 +1,24 @@
+================================================================================
+  Mirror Registry Test — MI (With Real ACR Credentials)
+================================================================================
+
+Pod:    build-and-deploy-20000175724
+Date:   2026-03-24
+Secret: oci-buildpacks-url, oci-buildpacks-username, oci-buildpacks-password (real ACR credentials)
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+"Logging into proxy mirror: choreocontrolplane.azurecr.io" -> "Login Succeeded!"
+Real ACR credentials worked. Full build succeeded: JDK, Maven, .car file,
+OAS generated, image pushed.
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- Real ACR credentials (choreocontrolplane.azurecr.io) work end-to-end
+  for MI OCI buildpack image pulling.
+- Login, build, and push all succeeded.
+- Validates that the oci-buildpacks-url/username/password secret pattern
+  works in production-like conditions.

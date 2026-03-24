@@ -1,0 +1,34 @@
+================================================================================
+  Mirror Registry Test — Buildpack Ruby (With Proxy)
+================================================================================
+
+Pod:    build-and-deploy-20000175726
+Date:   2026-03-24
+Secret: pkg-rubygems-url, pkg-rubygems-username, pkg-rubygems-password (Nexus rubygems-proxy)
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+Gemfile source rewritten from rubygems.org to ngrok proxy URL.
+bundle install fetched all gems through Nexus rubygems-proxy.
+
+Log confirmation:
+  "Fetching gem metadata from https://6709-203-94-95-14.ngrok-free.app/repository/rubygems-proxy/"
+
+Gems installed:
+  - sinatra 2.2.3
+  - rack 2.2.8
+  - webrick 1.7.0
+  - tilt 2.0.11
+  - mustermann 2.0.2
+  - rack-protection 2.2.3
+
+BUNDLE_<HOST> env var set for authentication.
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- Gemfile source rewrite approach works end-to-end.
+- BUNDLE_<HOST> env var correctly injects credentials for Bundler auth.
+- All gems resolved through proxy, no fallback to rubygems.org.

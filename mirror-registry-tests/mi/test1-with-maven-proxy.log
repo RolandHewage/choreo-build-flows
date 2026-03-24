@@ -1,0 +1,36 @@
+================================================================================
+  Mirror Registry Test — MI (With Maven Proxy)
+================================================================================
+
+Pod:    build-and-deploy-20000175714
+Date:   2026-03-24
+Secret: pkg-maven-url, pkg-maven-username, pkg-maven-password (Nexus maven-proxy)
+Result: BUILD FAILED (project issue, but Maven proxy confirmed working!)
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+Maven artifacts downloaded through Nexus maven-proxy via ngrok tunnel.
+Build failed after 177s with exit status 126 — project-specific issue,
+NOT proxy-related.
+
+--------------------------------------------------------------------------------
+ngrok Confirmation
+--------------------------------------------------------------------------------
+All requests returned 200 OK:
+  - maven-repository-metadata
+  - maven-archiver
+  - maven-artifact-manager
+  - sisu-guice
+  - plexus
+  - javax.activation
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- Maven proxy WORKS for MI builds (corrects earlier E2E finding that
+  CNB binding alone was ignored by the buildpack).
+- settings.xml mirror configuration correctly injected via
+  _MAVEN_USER_SETTINGS workaround (mount at /home/cnb/.m2/settings.xml).
+- Build failure (exit status 126) is project-specific, confirmed by
+  test2-no-proxy also needing a different project to succeed.

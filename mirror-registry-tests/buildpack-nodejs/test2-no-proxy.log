@@ -1,0 +1,44 @@
+================================================================
+Mirror Registry Test: Buildpack Node.js (no proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175703
+Date:   2026-03-24
+Secret: none
+Result: PASSED
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+Baseline test without proxy configuration. The same Node.js
+project installed 60 packages via npm ci in 814 ms from the
+default npm registry (vs 8s through Nexus/ngrok in test 1).
+No regression: builds work normally without proxy secrets.
+
+npm printed a notice about a new npm version available.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- Proxy config --
+No NPM_CONFIG_REGISTRY override
+No .npmrc mount
+Default registry: https://registry.npmjs.org/
+
+-- npm ci --
+  npm ci --quiet
+  added 60 packages in 814ms
+
+  All packages fetched directly from registry.npmjs.org
+
+-- npm notice --
+  npm notice: New major version of npm available
+
+-- Build --
+  Build succeeded
+
+-- Exporter --
+  Exporter succeeded
+
+================================================================

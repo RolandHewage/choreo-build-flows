@@ -1,0 +1,48 @@
+================================================================
+Mirror Registry Test: Buildpack .NET — Greeter (with proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175704
+Date:   2026-03-24
+Secret: pkg-nuget-url, pkg-nuget-username, pkg-nuget-password (Nexus nuget-proxy)
+Result: PASSED
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+The greeter project has no external NuGet packages, so dotnet
+restore completed almost instantly (63 ms). However, the NuGet
+proxy was still contacted — ngrok logs showed SDK workload check
+requests hitting the Nexus nuget-proxy endpoint. This confirms
+the proxy plumbing is active even when the project itself has
+no third-party dependencies.
+
+The exporter step succeeded, confirming the mount-path fix
+(secret mounted at /home/cnb/.nuget/NuGet/NuGet.Config) is
+working correctly.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- NuGet config (secret mount) --
+NuGet.Config mounted at /home/cnb/.nuget/NuGet/NuGet.Config
+packageSources: Nexus nuget-proxy URL set from pkg-nuget-url
+packageSourceCredentials: username/password from secret
+
+-- dotnet restore --
+  Determining projects to restore...
+  Restored /workspace/greeter.csproj (in 63 ms).
+
+-- SDK workload checks (ngrok) --
+Nexus nuget-proxy received requests for SDK workload manifests
+All responses: 200 OK
+
+-- Build --
+  greeter -> /workspace/bin/Release/net8.0/greeter.dll
+
+-- Exporter --
+  Adding layer 'buildpacks/dotnet-core-aspnet-runtime:dotnet-core-aspnet-runtime'
+  Exporter succeeded
+
+================================================================

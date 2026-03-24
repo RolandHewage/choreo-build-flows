@@ -1,0 +1,47 @@
+Pod: build-and-deploy-20000175692
+Date: 2026-03-24
+Secret:
+  oci-buildpacks-url: choreocontrolplane.azurecr.io (real credentials)
+  oci-buildpacks-username: <real>
+  oci-buildpacks-password: <real>
+Result: PASSED (build succeeded with real OCI mirror credentials)
+
+--- Key log sections ---
+
+Login Succeeded!
+Logging into proxy mirror: choreocontrolplane.azurecr.io
+Login Succeeded!
+pulling lifecycleImage
+Trying to pull choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.20.2...
+Writing manifest to image destination
+pulling buildpacksBuilderImage
+Trying to pull choreocontrolplane.azurecr.io/choreoipaas/choreo-buildpacks/builder:0.2.107...
+Writing manifest to image destination
+Image 'choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.20.2' will now be used as the lifecycle image
+Trying to pull choreocontrolplane.azurecr.io/choreoipaas/choreo-buildpacks/stacks/alpine/run:0.2.107...
+Writing manifest to image destination
+===> DETECTING
+[detector] choreo-buildpacks/ballerina 1.0.0
+===> BUILDING
+[builder] ---> Ballerina Buildpack
+[builder] ---> Detected Ballerina Version: 2201.8.4
+[builder] ---> Installing JRE
+[builder] openjdk version "17.0.7" 2023-04-18
+[builder] ---> Installing Ballerina
+[builder] Ballerina 2201.8.4 (Swan Lake Update 8)
+[builder] Compiling source
+[builder]     rolandh/transport:0.1.0
+[builder] Resolving dependencies
+[builder] ballerina/crypto:2.6.2 pulled from central successfully
+[builder] ballerina/cache:3.7.1 pulled from central successfully
+[builder] ballerina/constraint:1.5.0 pulled from central successfully
+[builder] ballerina/http:2.10.12 pulled from central successfully
+[builder] Generating executable
+[builder] Generating artifacts
+[builder]     target/bin/transport.jar
+===> EXPORTING
+[exporter] Saving choreo/app-image:latest...
+[exporter] *** Images (2865d020b5fa):
+[exporter]       choreo/app-image:latest
+Successfully built image 'choreo/app-image:latest'
+Removed login credentials for choreocontrolplane.azurecr.io

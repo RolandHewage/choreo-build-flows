@@ -1,0 +1,42 @@
+Pod: build-and-deploy-20000175684
+Date: 2026-03-24
+Secret:
+  oci-choreo-url: fake-mirror.example.com
+  oci-choreo-username: testuser
+  oci-choreo-password: testpass
+Result: PASSED (build failed as expected — correct behavior)
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T08:18:35.312Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T08:18:35.315Z" level=info msg="Using executor retry strategy" Duration=1s Factor=1.6 Jitter=0.5 Steps=5
+time="2026-03-24T08:18:35.315Z" level=info msg="Executor initialized" deadline="2026-03-24 09:18:20 +0000 UTC" includeScriptOutput=false namespace=dp-builds-4f7c3eef-178e-4d4f-8a99-bb360854ffa8 podName=build-and-deploy-20000175684 templateName=main
+time="2026-03-24T08:18:35.402Z" level=info msg="Start loading input artifacts..."
+time="2026-03-24T08:18:36.704Z" level=info msg="waiting for dependency \"environment-setup\"" argo=true
+time="2026-03-24T08:18:36.813Z" level=info msg="waiting for dependency \"dockerfile-scan\"" argo=true
+Login Succeeded!
+Logging into proxy mirror: fake-mirror.example.com
+Error: authenticating creds for "fake-mirror.example.com": pinging container registry fake-mirror.example.com: Get "https://fake-mirror.example.com/v2/": dial tcp: lookup fake-mirror.example.com on 172.19.0.10:53: no such host
+time="2026-03-24T08:18:44.815Z" level=info msg="sub-process exited" argo=true error="<nil>"
+Error: exit status 125
+time="2026-03-24T08:18:36.895Z" level=info msg="waiting for dependency \"build-component\"" argo=true
+Error: dependency "build-component" exited with non-zero code: 125
+dependency "build-component" exited with non-zero code: 125
+{
+    "check_type": "dockerfile",
+    "results": { "failed_checks": [] },
+    "summary": { "passed": 4, "failed": 0, "skipped": 0, "parsing_errors": 0, "resource_count": 1, "checkov_version": "2.3.148" }
+}
+Copying scan results to /mnt/vol
+/usr/src/app/status-update.sh: 62: [[: not found
+Curl request succeeded
+Using GitHub Enterprise token
+Cloning into 'choreo-build-flows'...
+HEAD is now at ceff5fa Add static files webapp proxy E2E test for webapp flow
+Repository cloned and checked out to branch main successfully.
+Checked out to commit SHA ceff5fa142c7d99e6e51db872aa50d056c71dcad.
+time="2026-03-24T08:18:36.557Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T08:18:36.589Z" level=info msg="Starting deadline monitor"
+time="2026-03-24T08:18:45.591Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T08:18:45.621Z" level=info msg="Alloc=17610 TotalAlloc=21410 Sys=32341 NumGC=3 Goroutines=8"
+time="2026-03-24T08:18:45.637Z" level=info msg="Deadline monitor stopped"

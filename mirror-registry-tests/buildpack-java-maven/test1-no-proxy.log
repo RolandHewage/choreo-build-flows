@@ -1,0 +1,47 @@
+Pod: build-and-deploy-20000175694
+Date: 2026-03-24
+Secret: none (deleted)
+Result: PASSED
+
+--- Key log sections ---
+
+Login Succeeded!
+pulling lifecycleImage
+Trying to pull choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.20.2...
+Writing manifest to image destination
+pulling buildpacksBuilderImage
+Trying to pull choreocontrolplane.azurecr.io/buildpacks/builder@sha256:68d26d7aa7232407fb9fcffcfa32daa2dce52627b24a910ac85239d0f293f618...
+Writing manifest to image destination
+pulling runImage
+Trying to pull choreocontrolplane.azurecr.io/buildpacks/google-22/run:2941124e39ef19f49aabac4257daf5f652805e81...
+Writing manifest to image destination
+Image 'choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.20.2' will now be used as the lifecycle image
+===> DETECTING
+[detector] 5 of 6 buildpacks participating
+[detector] google.java.runtime      0.9.2
+[detector] google.java.maven        0.9.1
+[detector] google.java.spring-boot  0.9.0
+[detector] google.java.entrypoint   0.9.0
+[detector] google.utils.label-image 0.0.2
+===> BUILDING
+[builder] === Java - Runtime (google.java.runtime@0.9.2) ===
+[builder] Using requested runtime feature version: 17
+[builder] Resolved version 17.0.18_8
+[builder] Installing  v17.0.18_8.
+[builder] Runtime successfully downloaded from us-docker.pkg.dev/gae-runtimes/runtimes-ubuntu2204/openjdk:17.0.18_8
+[builder] === Java - Maven (google.java.maven@0.9.1) ===
+[builder] Running "./mvnw clean package --batch-mode -DskipTests -Dhttp.keepAlive=false -f=pom.xml --quiet"
+[builder] Done "./mvnw clean package --batch-mode -DskipTests -Dhttp.keepAli..." (12.120141424s)
+[builder] === Java - Spring Boot (google.java.spring-boot@0.9.0) ===
+[builder] Found potential application JAR: /workspace/target/product-catalog-app-1.0.0.jar
+[builder] Detected Spring Boot version 3.0.5.
+===> EXPORTING
+[exporter] Adding layer 'google.java.runtime:java'
+[exporter] Saving imageblueprint...
+[exporter] *** Images (b2456911845a):
+[exporter]       imageblueprint
+Successfully built image 'imageblueprint'
+Removed login credentials for choreocontrolplane.azurecr.io
+
+Note: Maven took 12s without proxy (vs 11m48s with proxy through ngrok).
+No --settings flag in Maven command (no proxy secret = no settings.xml binding).

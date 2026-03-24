@@ -1,0 +1,23 @@
+================================================================================
+  Mirror Registry Test — Buildpack PHP (No Dependencies)
+================================================================================
+
+Pod:    build-and-deploy-20000175732
+Date:   2026-03-24
+Secret: pkg-composer-url, pkg-composer-username, pkg-composer-password
+Result: PASSED (no composer.json — proxy not exercised)
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+PHP 8.1.34 and Nginx 1.29.6 detected by buildpack.
+google.php.composer buildpack NOT detected (no composer.json in project).
+Proxy code path skipped entirely — no Composer install phase triggered.
+Build succeeded using base PHP + Nginx layers only.
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- Secret was mounted but never consumed (no composer.json to trigger Composer).
+- Confirms proxy injection is conditional on google.php.composer detection.
+- No errors, no regressions.

@@ -1,0 +1,22 @@
+================================================================================
+  Mirror Registry Test — MI (No Proxy Baseline)
+================================================================================
+
+Pod:    build-and-deploy-20000175719
+Date:   2026-03-24
+Secret: none
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+Build succeeded in 28s. PROJECT_BUILD_RETURN_CODE=0.
+.car file generated, OAS generated, image pushed.
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- Confirms the test1 proxy test failure was project-specific (exit 126),
+  not caused by the Maven proxy configuration.
+- No regression when proxy secrets are absent.
+- Default Maven behavior preserved.

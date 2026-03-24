@@ -1,0 +1,74 @@
+Pod: build-and-deploy-20000175685
+Date: 2026-03-24
+Secret: none (deleted)
+Result: PASSED
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T08:21:55.511Z" level=info msg="waiting for dependency \"dockerfile-scan\"" argo=true
+Login Succeeded!
+STEP 1/14: FROM choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim
+Trying to pull choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim...
+Getting image source signatures
+Copying blob sha256:5b5bb8e1ae65f8bfebbbe0809a939e220a6923b575491051ee1a71351f5ad446
+Copying blob sha256:d1773316e87adb41c3047775ecbd60c9500151acc8813ffb54e1c1d8e4d878af
+Copying blob sha256:b84a74cde5af5c5199bfc2ce2a8c8951a29a7716d17327e923f1a14c870a858b
+Copying blob sha256:c52ad5fe77401c07ba50465d447ecdd1044bd68215069e6cc520a21d28400b59
+Copying blob sha256:2b130f202ea4e83bdb89101616bed6b508b8b35720aeb377b2d969fa55a6b4c6
+Copying blob sha256:c4a1aa358f7d312896a51109df9f332bf8d606a2d0e6554ff556e2cc0b0a79b2
+Copying blob sha256:1c96b812900e24cef9cb65bbb7577155cd52884995300fdeeeacbe2c805a4890
+Copying blob sha256:4a0bcc429fdd991e73a545f888ca7c00dc6895e47bd3e2ec637083d7ba7fa56d
+Copying config sha256:fce1c69579212b059b2713cba109dce66e7e6d9d17302c283b151c5e7060a5c1
+Writing manifest to image destination
+STEP 2/14: WORKDIR /app
+--> 9b55ea4ed6c5
+STEP 3/14: ENV ENABLE_PERMISSIONS=TRUE
+--> fca0f5006c2b
+STEP 4/14: ENV DEBUG_PERMISSIONS=TRUE
+--> db528b976741
+STEP 5/14: ENV USER_NGINX=10015
+--> 760120625719
+STEP 6/14: ENV GROUP_NGINX=10015
+--> 41c799fffed7
+STEP 7/14: COPY default.conf /etc/nginx/conf.d/default.conf
+--> cb8a623d1dfa
+STEP 8/14: COPY error_404.html /usr/share/nginx/html/error_404.html
+--> c3acdb97bcb6
+STEP 9/14: COPY . /usr/share/nginx/html/
+--> 11dd6cfe5344
+STEP 10/14: USER root
+--> 16a1f93f32aa
+STEP 11/14: RUN mkdir -p /app/public && if [ -d /usr/share/nginx/html/public ]; then cp -r /usr/share/nginx/html/public/* /app/public/; fi && rm -rf /usr/share/nginx/html/public && ln -sf /app/public/ /usr/share/nginx/html/
+--> edd28d47d488
+STEP 12/14: USER 10015
+--> d75e65359506
+STEP 13/14: EXPOSE 8080
+--> e6858fed0897
+STEP 14/14: CMD ["nginx", "-g", "daemon off;"]
+COMMIT choreo/app-image:latest
+--> 849576a73939
+Successfully tagged localhost/choreo/app-image:latest
+849576a73939932c77a26cd129652aad6d7365784d3868a0dbbf262f77f14f52
+Writing manifest to image destination
+time="2026-03-24T08:22:10.517Z" level=info msg="sub-process exited" argo=true error="<nil>"
+Loaded image: localhost/choreo/app-image:latest
+Writing docker config contents to /tmp/docker_login_1774340532139/config.json
+DOCKER_CONFIG environment variable is set
+stdout chunk: Removed login credentials for choreodevuserappsalbacore.azurecr.io
+Writing manifest to image destination
+Writing docker config contents to /tmp/docker_login_1774340532139/config.json
+DOCKER_CONFIG environment variable is set
+time="2026-03-24T08:22:14.606Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T08:22:15.301Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T08:22:15.334Z" level=info msg="Alloc=17645 TotalAlloc=21438 Sys=31829 NumGC=3 Goroutines=8"
+time="2026-03-24T08:22:15.348Z" level=info msg="Deadline monitor stopped"
+/usr/src/app/status-update.sh: 62: [[: not found
+Curl request succeeded
+Using GitHub Enterprise token
+Cloning into 'choreo-build-flows'...
+HEAD is now at ceff5fa Add static files webapp proxy E2E test for webapp flow
+{
+    "check_type": "dockerfile",
+    "results": { "failed_checks": [] },
+    "summary": { "passed": 4, "failed": 0, "skipped": 0, "parsing_errors": 0, "resource_count": 1, "checkov_version": "2.3.148" }
+}

@@ -1,0 +1,112 @@
+Pod: build-and-deploy-20000175681
+Date: 2026-03-24
+Secret:
+  pkg-npm-url: https://6709-203-94-95-14.ngrok-free.app/repository/npm-proxy/
+  pkg-npm-token: <nexus-npm-token>
+Result: PASSED
+ngrok: logs confirmed traffic (200 OK)
+
+Note: Previous attempt (pod 20000175680) failed with "Error: accepts at most 1 arg(s), received 2"
+due to a trailing space in the pkg-npm-url secret value. After fixing, this attempt succeeded.
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T07:56:42.369Z" level=info msg="waiting for dependency \"dockerfile-scan\"" argo=true
+Login Succeeded!
+[1/2] STEP 1/9: FROM node:18-alpine AS builder
+Resolved "node" as an alias (/etc/containers/registries.conf.d/shortnames.conf)
+Trying to pull docker.io/library/node:18-alpine...
+Getting image source signatures
+Copying blob sha256:25ff2da83641908f65c3a74d80409d6b1b62ccfaab220b9ea70b80df5a2e0549
+Copying blob sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870
+Copying blob sha256:dd71dde834b5c203d162902e6b8994cb2309ae049a0eabc4efea161b2b5a3d0e
+Copying blob sha256:1e5a4c89cee5c0826c540ab06d4b6b491c96eda01837f430bd47f0d26702d6e3
+Copying config sha256:ee77c6cd7c1886ecc802ad6cedef3a8ec1ea27d1fb96162bf03dd3710839b8da
+Writing manifest to image destination
+[1/2] STEP 2/9: RUN npm install -g pnpm
+
+added 1 package in 1s
+npm notice New major version of npm available! 10.8.2 -> 11.12.0
+--> a7c3c39aa8c4
+[1/2] STEP 3/9: ARG NPM_REGISTRY
+--> 59669c2d4d68
+[1/2] STEP 4/9: RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
+--> dc0f84c7e436
+[1/2] STEP 5/9: WORKDIR /app
+--> 79d5cc190812
+[1/2] STEP 6/9: COPY . .
+--> 5b80c93cf6bd
+[1/2] STEP 7/9: RUN --mount=type=secret,id=npmrc,target=/root/.npmrc             if [ -f "./package-lock.json" ]; then npm install;             elif [ -f "./yarn.lock" ]; then yarn;             elif [ -f "./pnpm-lock.yaml" ]; then pnpm install;fi
+npm warn deprecated workbox-cacheable-response@6.6.0: workbox-background-sync@6.6.0
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated svgo@1.3.2: This SVGO version is no longer supported. Upgrade to v2.x.x.
+npm warn deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated.
+npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+npm warn deprecated rollup-plugin-terser@7.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
+
+added 1495 packages in 5m
+
+234 packages are looking for funding
+  run `npm fund` for details
+--> e0c9f6ffc97c
+[1/2] STEP 8/9: COPY . .
+--> 38f763641807
+[1/2] STEP 9/9: RUN npm run build
+
+> react-without-dockerfile@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Compiled successfully.
+
+File sizes after gzip:
+
+  46.66 kB  build/static/js/main.03830f07.js
+  1.78 kB   build/static/js/787.619e04f2.chunk.js
+  538 B     build/static/css/main.073c9b0a.css
+
+--> 9d7ddc3e5c46
+[2/2] STEP 1/13: FROM choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim
+Trying to pull choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim...
+Getting image source signatures
+Writing manifest to image destination
+[2/2] STEP 2/13: ENV ENABLE_PERMISSIONS=TRUE
+[2/2] STEP 3/13: ENV DEBUG_PERMISSIONS=TRUE
+[2/2] STEP 4/13: ENV USER_NGINX=10015
+[2/2] STEP 5/13: ENV GROUP_NGINX=10015
+[2/2] STEP 6/13: COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf
+[2/2] STEP 7/13: USER root
+[2/2] STEP 8/13: RUN ln -sf /app/public/ /usr/share/nginx/html/
+[2/2] STEP 9/13: USER nginx
+[2/2] STEP 10/13: COPY --from=builder /app/build /usr/share/nginx/html/
+[2/2] STEP 11/13: USER 10015
+[2/2] STEP 12/13: EXPOSE 8080
+[2/2] STEP 13/13: CMD ["nginx", "-g", "daemon off;"]
+[2/2] COMMIT choreo/app-image:latest
+--> 5b4e6fcbf3b7
+Successfully tagged localhost/choreo/app-image:latest
+5b4e6fcbf3b7cbf630613ceebd44d96189f387cd004d3d08c454fc39768ad58e
+Writing manifest to image destination
+time="2026-03-24T08:02:39.450Z" level=info msg="sub-process exited" argo=true error="<nil>"
+Loaded image: localhost/choreo/app-image:latest
+Writing docker config contents to /tmp/docker_login_1774339361042/config.json
+DOCKER_CONFIG environment variable is set
+stdout chunk: Removed login credentials for choreodevuserappsalbacore.azurecr.io
+Writing manifest to image destination
+Writing docker config contents to /tmp/docker_login_1774339361042/config.json
+DOCKER_CONFIG environment variable is set
+time="2026-03-24T08:02:43.525Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T08:02:44.245Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T08:02:44.275Z" level=info msg="Alloc=11420 TotalAlloc=22231 Sys=31829 NumGC=6 Goroutines=8"
+time="2026-03-24T08:02:44.286Z" level=info msg="stopping progress monitor (context done)" error="context canceled"
+/usr/src/app/status-update.sh: 62: [[: not found
+Curl request succeeded
+Using GitHub token
+Cloning into 'choreo-samples'...
+HEAD is now at 06ae169 Fix critical CVE vulnerabilities
+Repository cloned and checked out to branch main successfully.
+{
+    "check_type": "dockerfile",
+    "results": { "failed_checks": [] },
+    "summary": { "passed": 5, "failed": 0, "skipped": 0, "parsing_errors": 0, "resource_count": 1, "checkov_version": "2.3.148" }
+}

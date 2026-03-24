@@ -1,0 +1,22 @@
+================================================================================
+  Mirror Registry Test — Buildpack PHP (No Proxy Baseline)
+================================================================================
+
+Pod:    build-and-deploy-20000175734
+Date:   2026-03-24
+Secret: none
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+composer install took 922ms from default packagist.org (vs 7s through proxy).
+monolog/monolog 3.10.0 and psr/log 3.0.2 fetched directly from packagist.org.
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- No regression when proxy secrets are absent.
+- Default Composer behavior preserved.
+- Baseline performance: 922ms direct vs ~7s through Nexus proxy (expected
+  overhead from ngrok tunnel + proxy layer).

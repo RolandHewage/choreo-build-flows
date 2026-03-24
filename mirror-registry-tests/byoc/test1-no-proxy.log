@@ -1,0 +1,194 @@
+Pod: build-and-deploy-20000175671
+Date: 2026-03-24
+Secret: none (deleted)
+Result: PASSED
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T07:06:30.247Z" level=info msg="waiting for dependency \"environment-setup\"" argo=true
+No configurations found in the component.yaml
+extracted source config details:  {
+  current_latest_component_schema_version: '1.2',
+  src_config_type: 'component.yaml',
+  schema_version: '1.2'
+}
+choreo-update-config-generation-status saved
+time="2026-03-24T07:06:36.249Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:06:36.249Z" level=info msg="not saving outputs - not main container" argo=true
+/usr/src/app/status-update.sh: 62: [[: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   154  100   101  100    53    123     64 --:--:-- --:--:-- --:--:--   187
+{"success":true,"data":{"generatedMaps":[],"affected":1},"message":"DEPLOYMENT TRACK STATUS UPDATED"}-e
+Curl request succeeded
+Using GitHub token
+Cloning into 'choreo-samples'...
+From https://github.com/wso2/choreo-samples
+ * branch            6560d3c81bce43f62600e8cebd1b778d42b9509b -> FETCH_HEAD
+Note: switching to '6560d3c81bce43f62600e8cebd1b778d42b9509b'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+time="2026-03-24T07:06:30.039Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T07:06:30.042Z" level=info msg="Using executor retry strategy" Duration=1s Factor=1.6 Jitter=0.5 Steps=5
+time="2026-03-24T07:06:30.042Z" level=info msg="Executor initialized" deadline="2026-03-24 08:06:03 +0000 UTC" includeScriptOutput=false namespace=dp-builds-4f7c3eef-178e-4d4f-8a99-bb360854ffa8 podName=build-and-deploy-20000175671 templateName=main version="&Version{Version:v3.6.2,BuildDate:2024-12-02T14:13:35Z,GitCommit:741ab0ef7b6432925e49882cb4294adccf5912ec,GitTag:v3.6.2,GitTreeState:clean,GoVersion:go1.23.3,Compiler:gc,Platform:linux/amd64,}"
+time="2026-03-24T07:06:30.067Z" level=info msg="Starting deadline monitor"
+time="2026-03-24T07:06:30.619Z" level=info msg="waiting for dependency \"trivy-scan\"" argo=true
+time="2026-03-24T07:06:30.538Z" level=info msg="waiting for dependency \"docker-build\"" argo=true
+If you want to create a new branch to retain commits you create, you may
+time="2026-03-24T07:06:28.794Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T07:07:18.078Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T07:07:18.078Z" level=info msg="No Script output reference in workflow. Capturing script output ignored"
+time="2026-03-24T07:07:18.078Z" level=info msg="No output parameters"
+time="2026-03-24T07:07:18.078Z" level=info msg="No output artifacts"
+time="2026-03-24T07:07:18.115Z" level=info msg="Alloc=17069 TotalAlloc=21415 Sys=32085 NumGC=3 Goroutines=8"
+Getting image source signatures
+Copying blob sha256:c887186018cae63c35a532161a8448cdad0489263b28d3b1232720ed1fd5ad6a
+Copying blob sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e
+Copying blob sha256:7d2a73cee5a5e2fcdbd887c3faf82680bd8ac317e31083456ab3e25f0815243a
+Copying config sha256:8f7bb862ff1f5ae8d8f5a2d5360bf4f7dbc8591f08752202df8a93142bfb6d16
+Writing manifest to image destination
+Loaded image: localhost/choreo/app-image:latest
+Writing docker config contents to /tmp/docker_login_1774336035512/config.json
+DOCKER_CONFIG environment variable is set
+stdout chunk: Removed login credentials for choreodevuserappsalbacore.azurecr.io
+
+stderr chunk: Getting image source signatures
+Copying blob sha256:7d2a73cee5a5e2fcdbd887c3faf82680bd8ac317e31083456ab3e25f0815243a
+Getting image source signatures
+do so (now or later) by using -c with the switch command. Example:
+time="2026-03-24T07:06:28.797Z" level=info msg="Using executor retry strategy" Duration=1s Factor=1.6 Jitter=0.5 Steps=5
+time="2026-03-24T07:06:28.797Z" level=info msg="Executor initialized" deadline="2026-03-24 08:06:03 +0000 UTC" includeScriptOutput=false namespace=dp-builds-4f7c3eef-178e-4d4f-8a99-bb360854ffa8 podName=build-and-deploy-20000175671 templateName=main version="&Version{Version:v3.6.2,BuildDate:2024-12-02T14:13:35Z,GitCommit:741ab0ef7b6432925e49882cb4294adccf5912ec,GitTag:v3.6.2,GitTreeState:clean,GoVersion:go1.23.3,Compiler:gc,Platform:linux/amd64,}"
+time="2026-03-24T07:06:28.880Z" level=info msg="Start loading input artifacts..."
+time="2026-03-24T07:06:28.880Z" level=info msg="Alloc=15674 TotalAlloc=20864 Sys=28245 NumGC=3 Goroutines=4"
+time="2026-03-24T07:06:30.461Z" level=info msg="waiting for dependency \"dockerfile-scan\"" argo=true
+Login Succeeded!
+[1/2] STEP 1/4: FROM golang:1.21-alpine AS builder
+Resolving "golang" using unqualified-search registries (/etc/containers/registries.conf)
+Trying to pull docker.io/library/golang:1.21-alpine...
+Getting image source signatures
+Copying blob sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1
+Copying blob sha256:4579008f8500d429ec007d092329191009711942d9380d060c8d9bd24c0c352c
+Copying blob sha256:54bf7053e2d96c2c7f4637ad7580bd64345b3c9fabb163e1fdb8894aea8a9af0
+Copying blob sha256:c6a83fedfae6ed8a4f5f7cbb6a7b6f1c1ec3d86fea8cb9e5ba2e5e6673fde9f6
+Copying blob sha256:41db7493d1c6f3f26428d119962e3862c14a9e20bb0b8fefc36e7282d015d099
+Copying config sha256:c2321c7cf7210be837249dba0f3699fad6ddbb5718e70344b28c0d58feff4c0b
+Writing manifest to image destination
+[1/2] STEP 2/4: WORKDIR /app
+--> 37ff1670704c
+[1/2] STEP 3/4: COPY . .
+--> d312f676350f
+[1/2] STEP 4/4: RUN go build -o go-greeter .
+--> 9fb882a7f086
+[2/2] STEP 1/6: FROM alpine:latest
+Resolved "alpine" as an alias (/etc/containers/registries.conf.d/shortnames.conf)
+Trying to pull docker.io/library/alpine:latest...
+Getting image source signatures
+Copying blob sha256:589002ba0eaed121a1dbf42f6648f29e5be55d5c8a6ee0f8eaa0285cc21ac153
+Copying config sha256:a40c03cbb81c59bfb0e0887ab0b1859727075da7b9cc576a1cec2c771f38c5fb
+Writing manifest to image destination
+[2/2] STEP 2/6: WORKDIR /app
+--> d8cdd0eeb867
+[2/2] STEP 3/6: COPY --from=builder /app/go-greeter .
+--> 36a2c64690ac
+[2/2] STEP 4/6: RUN adduser     --disabled-password     --gecos ""     --home "/nonexistent"     --shell "/sbin/nologin"     --no-create-home     --uid 10014     "choreo"
+--> 0d8c4259b16e
+[2/2] STEP 5/6: USER 10014
+--> 55cd6f9b0fe2
+[2/2] STEP 6/6: ENTRYPOINT ["./go-greeter"]
+[2/2] COMMIT choreo/app-image:latest
+--> 8f7bb862ff1f
+Successfully tagged localhost/choreo/app-image:latest
+8f7bb862ff1f5ae8d8f5a2d5360bf4f7dbc8591f08752202df8a93142bfb6d16
+Copying blob sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e
+Copying blob sha256:7d2a73cee5a5e2fcdbd887c3faf82680bd8ac317e31083456ab3e25f0815243a
+Copying blob sha256:c887186018cae63c35a532161a8448cdad0489263b28d3b1232720ed1fd5ad6a
+Copying config sha256:8f7bb862ff1f5ae8d8f5a2d5360bf4f7dbc8591f08752202df8a93142bfb6d16
+Writing manifest to image destination
+time="2026-03-24T07:07:03.469Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:07:03.469Z" level=info msg="not saving outputs - not main container" argo=true
+time="2026-03-24T07:06:30.350Z" level=info msg="waiting for dependency \"validations\"" argo=true
+{
+Copying blob sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e
+Copying blob sha256:c887186018cae63c35a532161a8448cdad0489263b28d3b1232720ed1fd5ad6a
+
+    "check_type": "dockerfile",
+    "results": {
+        "failed_checks": []
+    },
+    "summary": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 1,
+        "checkov_version": "2.3.148"
+    }
+}
+Copying scan results to /mnt/vol
+time="2026-03-24T07:06:41.352Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:06:41.352Z" level=info msg="not saving outputs - not main container" argo=true
+Copying blob sha256:c887186018cae63c35a532161a8448cdad0489263b28d3b1232720ed1fd5ad6a
+Copying config sha256:8f7bb862ff1f5ae8d8f5a2d5360bf4f7dbc8591f08752202df8a93142bfb6d16
+Writing manifest to image destination
+
+Writing docker config contents to /tmp/docker_login_1774336035512/config.json
+DOCKER_CONFIG environment variable is set
+time="2026-03-24T07:07:17.629Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:07:17.629Z" level=info msg="not saving outputs - not main container" argo=true
+Copying blob sha256:7d2a73cee5a5e2fcdbd887c3faf82680bd8ac317e31083456ab3e25f0815243a
+Copying blob sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e
+Copying config sha256:8f7bb862ff1f5ae8d8f5a2d5360bf4f7dbc8591f08752202df8a93142bfb6d16
+Writing manifest to image destination
+Loaded image: localhost/choreo/app-image:latest
+2026-03-24T07:07:04Z    WARN    '--security-checks' is deprecated. Use '--scanners' instead.
+2026-03-24T07:07:04Z    INFO    [vulndb] Need to update DB
+2026-03-24T07:07:04Z    INFO    [vulndb] Downloading vulnerability DB...
+2026-03-24T07:07:04Z    INFO    [vulndb] Downloading artifact...    repo="choreoanonymouspullable.azurecr.io/aquasecurity/trivy-db:2"
+1.09 MiB / 88.14 MiB [>______________________________________________________________] 1.24% ? p/s ?
+8.00 MiB / 88.14 MiB [----->_________________________________________________________] 9.08% ? p/s ?
+20.00 MiB / 88.14 MiB [------------->_______________________________________________] 22.69% ? p/s ?
+30.09 MiB / 88.14 MiB [---------------->_______________________________] 34.14% 48.29 MiB p/s ETA 1s
+41.38 MiB / 88.14 MiB [---------------------->_________________________] 46.94% 48.29 MiB p/s ETA 0s
+51.58 MiB / 88.14 MiB [---------------------------->___________________] 58.52% 48.29 MiB p/s ETA 0s
+59.02 MiB / 88.14 MiB [-------------------------------->_______________] 66.96% 48.24 MiB p/s ETA 0s
+64.00 MiB / 88.14 MiB [---------------------------------->_____________] 72.61% 48.24 MiB p/s ETA 0s
+72.00 MiB / 88.14 MiB [--------------------------------------->________] 81.69% 48.24 MiB p/s ETA 0s
+81.50 MiB / 88.14 MiB [-------------------------------------------->___] 92.47% 47.58 MiB p/s ETA 0s
+88.14 MiB / 88.14 MiB [-------------------------------------------------] 100.00% 16.06 MiB p/s 5.7s
+2026-03-24T07:07:10Z    INFO    [vulndb] Artifact successfully downloaded    repo="choreoanonymouspullable.azurecr.io/aquasecurity/trivy-db:2"
+2026-03-24T07:07:10Z    INFO    [vuln] Vulnerability scanning is enabled
+Copying blob sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e
+Copying blob sha256:7d2a73cee5a5e2fcdbd887c3faf82680bd8ac317e31083456ab3e25f0815243a
+Copying blob sha256:c887186018cae63c35a532161a8448cdad0489263b28d3b1232720ed1fd5ad6a
+Copying config sha256:8f7bb862ff1f5ae8d8f5a2d5360bf4f7dbc8591f08752202df8a93142bfb6d16
+Writing manifest to image destination
+2026-03-24T07:07:12Z    INFO    Detected OS    family="alpine" version="3.23.3"
+2026-03-24T07:07:12Z    WARN    This OS version is not on the EOL list    family="alpine" version="3.23"
+2026-03-24T07:07:12Z    INFO    [alpine] Detecting vulnerabilities...    os_version="3.23" repository="3.23" pkg_num=16
+2026-03-24T07:07:12Z    INFO    Number of language-specific files    num=1
+2026-03-24T07:07:12Z    INFO    [gobinary] Detecting vulnerabilities...
+2026-03-24T07:07:12Z    WARN    Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/v0.60/docs/scanner/vulnerability#severity-selection for details.
+2026-03-24T07:07:12Z    INFO    Some vulnerabilities have been ignored/suppressed. Use the "--show-suppressed" flag to display them.
+time="2026-03-24T07:07:13.545Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:07:13.545Z" level=info msg="not saving outputs - not main container" argo=true
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 6560d3c Fix typo: repositoy to repository
+Repository cloned and checked out to branch main successfully.
+Checked out to commit SHA 6560d3c81bce43f62600e8cebd1b778d42b9509b.
+time="2026-03-24T07:06:34.167Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:06:34.167Z" level=info msg="not saving outputs - not main container" argo=true

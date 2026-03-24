@@ -1,0 +1,40 @@
+================================================================
+Mirror Registry Test: Buildpack Go — no deps (with proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175699
+Date:   2026-03-24
+Secret: pkg-go-url, pkg-go-username, pkg-go-password (Nexus go-proxy)
+Result: PASSED (no deps to download)
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+Go project with no external dependencies. The GOPROXY env var
+was set to the Nexus go-proxy URL and .netrc was generated with
+credentials, but since there are no module dependencies, no
+actual proxy traffic occurred. go build succeeded in 5.4s.
+
+Confirms the proxy plumbing (GOPROXY + .netrc) is wired up
+correctly without breaking zero-dependency builds.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- Proxy config --
+GOPROXY set to Nexus go-proxy URL from pkg-go-url
+.netrc generated at /home/cnb/.netrc with pkg-go-username/pkg-go-password
+GONOSUMDB=*
+GOFLAGS=-insecure
+
+-- go mod download --
+  "no module dependencies to download"
+
+-- go build --
+  go build succeeded in 5.4s
+
+-- Exporter --
+  Exporter succeeded
+
+================================================================

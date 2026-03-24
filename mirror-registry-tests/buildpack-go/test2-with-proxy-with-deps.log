@@ -1,0 +1,44 @@
+================================================================
+Mirror Registry Test: Buildpack Go — with deps (with proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175700
+Date:   2026-03-24
+Secret: pkg-go-url, pkg-go-username, pkg-go-password (Nexus go-proxy)
+Result: PASSED
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+Go project with external dependencies (go-chi/chi). All module
+downloads went through the Nexus go-proxy. go mod download took
+2.84s (actual downloads through ngrok). ngrok logs confirmed
+successful proxy traffic for all module artifacts.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- Proxy config --
+GOPROXY set to Nexus go-proxy URL from pkg-go-url
+.netrc generated at /home/cnb/.netrc with pkg-go-username/pkg-go-password
+GONOSUMDB=*
+GOFLAGS=-insecure
+
+-- go mod download --
+  go mod download completed in 2.84s
+
+-- ngrok traffic (confirmed) --
+  github.com/go-chi/chi/v5@v5.0.12
+    .mod  — 200 OK
+    .info — 200 OK
+    .zip  — 200 OK
+  All module artifacts fetched through Nexus go-proxy
+
+-- go build --
+  go build succeeded
+
+-- Exporter --
+  Exporter succeeded
+
+================================================================

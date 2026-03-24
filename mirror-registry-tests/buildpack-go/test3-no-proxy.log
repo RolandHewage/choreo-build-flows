@@ -1,0 +1,38 @@
+================================================================
+Mirror Registry Test: Buildpack Go — with deps (no proxy)
+================================================================
+
+Pod:    build-and-deploy-20000175701
+Date:   2026-03-24
+Secret: none
+Result: PASSED
+
+----------------------------------------------------------------
+Summary
+----------------------------------------------------------------
+Baseline test without proxy configuration. The same Go project
+with dependencies restored modules directly from the default
+Go module proxy in 84 ms (vs 2.84s through Nexus/ngrok in
+test 2). No regression: builds work normally without proxy
+secrets.
+
+----------------------------------------------------------------
+Key Log Sections
+----------------------------------------------------------------
+
+-- Proxy config --
+GOPROXY=https://proxy.golang.org|direct (default, no override)
+No .netrc generated
+
+-- go mod download --
+  go mod download completed in 84ms
+
+  Modules fetched directly from proxy.golang.org
+
+-- go build --
+  go build succeeded
+
+-- Exporter --
+  Exporter succeeded
+
+================================================================

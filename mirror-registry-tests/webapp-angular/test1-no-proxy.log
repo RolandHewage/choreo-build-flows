@@ -1,0 +1,126 @@
+Pod: build-and-deploy-20000175678
+Date: 2026-03-24
+Secret: none (deleted)
+Result: PASSED
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T07:40:35.888Z" level=info msg="waiting for dependency \"build-component\"" argo=true
+time="2026-03-24T07:40:35.561Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T07:40:35.564Z" level=info msg="Using executor retry strategy" Duration=1s Factor=1.6 Jitter=0.5 Steps=5
+time="2026-03-24T07:40:35.564Z" level=info msg="Executor initialized" deadline="2026-03-24 08:40:18 +0000 UTC" includeScriptOutput=false namespace=dp-builds-4f7c3eef-178e-4d4f-8a99-bb360854ffa8 podName=build-and-deploy-20000175678 templateName=main version="&Version{Version:v3.6.2,BuildDate:2024-12-02T14:13:35Z,GitCommit:741ab0ef7b6432925e49882cb4294adccf5912ec,GitTag:v3.6.2,GitTreeState:clean,GoVersion:go1.23.3,Compiler:gc,Platform:linux/amd64,}"
+time="2026-03-24T07:40:35.588Z" level=info msg="Starting deadline monitor"
+time="2026-03-24T07:40:35.709Z" level=info msg="waiting for dependency \"environment-setup\"" argo=true
+{
+    "check_type": "dockerfile",
+    "results": {
+        "failed_checks": []
+    },
+    "summary": {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 1,
+        "checkov_version": "2.3.148"
+    }
+}
+Copying scan results to /mnt/vol
+time="2026-03-24T07:40:44.712Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:40:35.806Z" level=info msg="waiting for dependency \"dockerfile-scan\"" argo=true
+Login Succeeded!
+time="2026-03-24T07:40:45Z" level=warning msg="missing \"NPM_REGISTRY\" build argument. Try adding \"--build-arg NPM_REGISTRY=<VALUE>\" to the command line"
+[1/2] STEP 1/9: FROM node:18-alpine AS builder
+Resolved "node" as an alias (/etc/containers/registries.conf.d/shortnames.conf)
+Trying to pull docker.io/library/node:18-alpine...
+Getting image source signatures
+Copying blob sha256:25ff2da83641908f65c3a74d80409d6b1b62ccfaab220b9ea70b80df5a2e0549
+Copying blob sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870
+Copying blob sha256:dd71dde834b5c203d162902e6b8994cb2309ae049a0eabc4efea161b2b5a3d0e
+Copying blob sha256:1e5a4c89cee5c0826c540ab06d4b6b491c96eda01837f430bd47f0d26702d6e3
+Copying config sha256:ee77c6cd7c1886ecc802ad6cedef3a8ec1ea27d1fb96162bf03dd3710839b8da
+Writing manifest to image destination
+[1/2] STEP 2/9: RUN npm install -g pnpm
+
+added 1 package in 1s
+npm notice New major version of npm available! 10.8.2 -> 11.12.0
+--> f6e3b3087524
+[1/2] STEP 3/9: ARG NPM_REGISTRY
+--> fedb4e8cfd18
+[1/2] STEP 4/9: RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
+--> 76f174a3e406
+[1/2] STEP 5/9: WORKDIR /app
+--> 5302290384d7
+[1/2] STEP 6/9: COPY . .
+--> da36a7a19d12
+[1/2] STEP 7/9: RUN --mount=type=secret,id=npmrc,target=/root/.npmrc             if [ -f "./package-lock.json" ]; then npm install;             elif [ -f "./yarn.lock" ]; then yarn;             elif [ -f "./pnpm-lock.yaml" ]; then pnpm install;fi
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated @babel/plugin-proposal-async-generator-functions@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained.
+npm warn deprecated @babel/plugin-proposal-unicode-property-regex@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained.
+npm warn deprecated @wessberg/ts-evaluator@0.0.27: this package has been renamed to ts-evaluator.
+
+added 960 packages, and audited 961 packages in 22s
+
+113 packages are looking for funding
+77 vulnerabilities (18 low, 18 moderate, 39 high, 2 critical)
+--> 1a21a496086d
+[1/2] STEP 8/9: COPY . .
+--> 3ba65cbdf6b7
+[1/2] STEP 9/9: RUN npm run build
+
+> angular-spa@0.0.0 build
+> ng build
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Copying assets complete.
+✔ Index html generation complete.
+
+Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+main.3d9f69569d68d756.js      | main          | 195.28 kB |                52.37 kB
+polyfills.072a721cfe69e074.js | polyfills     |  33.02 kB |                10.68 kB
+runtime.a105e64bade29a47.js   | runtime       | 900 bytes |               513 bytes
+styles.ef46db3751d8e999.css   | styles        |   0 bytes |                       -
+
+Build at: 2026-03-24T07:41:50.073Z - Hash: 81eaf2fd1c7880a3 - Time: 10408ms
+--> bd98fe5e8b05
+[2/2] STEP 1/13: FROM choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim
+Trying to pull choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim...
+Getting image source signatures
+Writing manifest to image destination
+[2/2] STEP 2/13: ENV ENABLE_PERMISSIONS=TRUE
+[2/2] STEP 3/13: ENV DEBUG_PERMISSIONS=TRUE
+[2/2] STEP 4/13: ENV USER_NGINX=10015
+[2/2] STEP 5/13: ENV GROUP_NGINX=10015
+[2/2] STEP 6/13: COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf
+[2/2] STEP 7/13: USER root
+[2/2] STEP 8/13: RUN ln -sf /app/public/ /usr/share/nginx/html/
+[2/2] STEP 9/13: USER nginx
+[2/2] STEP 10/13: COPY --from=builder /app/dist /usr/share/nginx/html/
+[2/2] STEP 11/13: USER 10015
+[2/2] STEP 12/13: EXPOSE 8080
+[2/2] STEP 13/13: CMD ["nginx", "-g", "daemon off;"]
+[2/2] COMMIT choreo/app-image:latest
+--> 3d35e807ab8d
+Successfully tagged localhost/choreo/app-image:latest
+3d35e807ab8dd309ba26a1b88c677ea66725b5c2fa348bedb61b49933084b7c3
+Writing manifest to image destination
+time="2026-03-24T07:42:04.825Z" level=info msg="sub-process exited" argo=true error="<nil>"
+Loaded image: localhost/choreo/app-image:latest
+Writing docker config contents to /tmp/docker_login_1774338126222/config.json
+DOCKER_CONFIG environment variable is set
+stdout chunk: Removed login credentials for choreodevuserappsalbacore.azurecr.io
+Writing manifest to image destination
+Writing docker config contents to /tmp/docker_login_1774338126222/config.json
+DOCKER_CONFIG environment variable is set
+time="2026-03-24T07:42:08.908Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:42:09.613Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T07:42:09.647Z" level=info msg="Alloc=16389 TotalAlloc=21597 Sys=27477 NumGC=3 Goroutines=8"
+time="2026-03-24T07:42:09.663Z" level=info msg="Deadline monitor stopped"
+/usr/src/app/status-update.sh: 62: [[: not found
+Curl request succeeded
+Using GitHub token
+Cloning into 'choreo-samples'...
+HEAD is now at 06ae169 Fix critical CVE vulnerabilities
+Repository cloned and checked out to branch main successfully.
+Checked out to commit SHA 06ae169355059d05580f88eb9c3d88f0d18c8087.

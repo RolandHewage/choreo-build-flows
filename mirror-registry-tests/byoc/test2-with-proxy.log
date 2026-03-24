@@ -1,0 +1,102 @@
+Pod: build-and-deploy-20000175674
+Date: 2026-03-24
+Secret:
+  oci-dockerhub-url: fake-mirror.example.com
+  oci-dockerhub-username: testuser
+  oci-dockerhub-password: testpass
+Result: PASSED (build failed as expected — correct behavior)
+
+--- All container logs (kubectl logs --all-containers -f --max-log-requests=8) ---
+
+time="2026-03-24T07:25:10.371Z" level=info msg="waiting for dependency \"docker-build\"" argo=true
+Error: dependency "docker-build" exited with non-zero code: 125
+dependency "docker-build" exited with non-zero code: 125
+time="2026-03-24T07:25:09.944Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T07:25:09.947Z" level=info msg="Using executor retry strategy" Duration=1s Factor=1.6 Jitter=0.5 Steps=5
+time="2026-03-24T07:25:09.947Z" level=info msg="Executor initialized" deadline="2026-03-24 08:24:48 +0000 UTC" includeScriptOutput=false namespace=dp-builds-4f7c3eef-178e-4d4f-8a99-bb360854ffa8 podName=build-and-deploy-20000175674 templateName=main version="&Version{Version:v3.6.2,BuildDate:2024-12-02T14:13:35Z,GitCommit:741ab0ef7b6432925e49882cb4294adccf5912ec,GitTag:v3.6.2,GitTreeState:clean,GoVersion:go1.23.3,Compiler:gc,Platform:linux/amd64,}"
+time="2026-03-24T07:25:09.983Z" level=info msg="Starting deadline monitor"
+time="2026-03-24T07:25:22.987Z" level=info msg="Main container completed" error="<nil>"
+time="2026-03-24T07:25:22.987Z" level=info msg="No Script output reference in workflow. Capturing script output ignored"
+time="2026-03-24T07:25:22.987Z" level=info msg="No output parameters"
+time="2026-03-24T07:25:22.987Z" level=info msg="No output artifacts"
+time="2026-03-24T07:25:23.037Z" level=info msg="Alloc=17331 TotalAlloc=21362 Sys=32085 NumGC=3 Goroutines=8"
+time="2026-03-24T07:25:23.055Z" level=info msg="Deadline monitor stopped"
+time="2026-03-24T07:25:10.066Z" level=info msg="waiting for dependency \"environment-setup\"" argo=true
+No configurations found in the component.yaml
+extracted source config details:  {
+  current_latest_component_schema_version: '1.2',
+  src_config_type: 'component.yaml',
+  schema_version: '1.2'
+}
+choreo-update-config-generation-status saved
+time="2026-03-24T07:25:16.068Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:25:16.068Z" level=info msg="not saving outputs - not main container" argo=true
+time="2026-03-24T07:25:10.446Z" level=info msg="waiting for dependency \"trivy-scan\"" argo=true
+Error: dependency "trivy-scan" exited with non-zero code: 64
+dependency "trivy-scan" exited with non-zero code: 64
+/usr/src/app/status-update.sh: 62: [[: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+time="2026-03-24T07:25:08.821Z" level=info msg="Starting Workflow Executor" version=v3.6.2
+time="2026-03-24T07:25:08.825Z" level=info msg="Using executor retry strategy" Duration=1s Factor=1.6 Jitter=0.5 Steps=5
+time="2026-03-24T07:25:08.825Z" level=info msg="Executor initialized" deadline="2026-03-24 08:24:48 +0000 UTC" includeScriptOutput=false namespace=dp-builds-4f7c3eef-178e-4d4f-8a99-bb360854ffa8 podName=build-and-deploy-20000175674 templateName=main version="&Version{Version:v3.6.2,BuildDate:2024-12-02T14:13:35Z,GitCommit:741ab0ef7b6432925e49882cb4294adccf5912ec,GitTag:v3.6.2,GitTreeState:clean,GoVersion:go1.23.3,Compiler:gc,Platform:linux/amd64,}"
+time="2026-03-24T07:25:08.978Z" level=info msg="Start loading input artifacts..."
+time="2026-03-24T07:25:08.978Z" level=info msg="Alloc=16190 TotalAlloc=20848 Sys=27477 NumGC=3 Goroutines=4"
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+/usr/src/app/status-update.sh: 62: -z: not found
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   154  100   101  100    53    124     65 --:--:-- --:--:-- --:--:--   189
+{"success":true,"data":{"generatedMaps":[],"affected":1},"message":"DEPLOYMENT TRACK STATUS UPDATED"}-e
+Curl request succeeded
+Using GitHub token
+Cloning into 'choreo-samples'...
+From https://github.com/wso2/choreo-samples
+ * branch            6560d3c81bce43f62600e8cebd1b778d42b9509b -> FETCH_HEAD
+Note: switching to '6560d3c81bce43f62600e8cebd1b778d42b9509b'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+time="2026-03-24T07:25:10.295Z" level=info msg="waiting for dependency \"dockerfile-scan\"" argo=true
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 6560d3c Fix typo: repositoy to repository
+Repository cloned and checked out to branch main successfully.
+Checked out to commit SHA 6560d3c81bce43f62600e8cebd1b778d42b9509b.
+time="2026-03-24T07:25:14.008Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:25:14.008Z" level=info msg="not saving outputs - not main container" argo=true
+time="2026-03-24T07:25:10.181Z" level=info msg="waiting for dependency \"validations\"" argo=true
+{
+    "check_type": "dockerfile",
+    "results": {
+        "failed_checks": []
+    },
+    "summary": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 1,
+        "checkov_version": "2.3.148"
+    }
+}
+Copying scan results to /mnt/vol
+time="2026-03-24T07:25:21.186Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:25:21.186Z" level=info msg="not saving outputs - not main container" argo=true
+Login Succeeded!
+Logging into proxy mirror: fake-mirror.example.com
+Error: authenticating creds for "fake-mirror.example.com": pinging container registry fake-mirror.example.com: Get "https://fake-mirror.example.com/v2/": dial tcp: lookup fake-mirror.example.com on 172.19.0.10:53: no such host
+time="2026-03-24T07:25:22.297Z" level=info msg="sub-process exited" argo=true error="<nil>"
+time="2026-03-24T07:25:22.297Z" level=info msg="not saving outputs - not main container" argo=true

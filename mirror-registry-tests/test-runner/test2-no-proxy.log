@@ -1,0 +1,25 @@
+================================================================================
+  Mirror Registry Test — Test Runner (No Proxy Baseline)
+================================================================================
+
+Pod:    build-and-deploy-20000175731
+Date:   2026-03-24
+Secret: none
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+"missing NPM_REGISTRY build argument" warning logged (expected when no
+proxy secrets are present).
+npm i -g newman took 4s from default npm registry (vs 56s through proxy).
+148 packages installed.
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- No regression when proxy secrets are absent.
+- Default npm registry behavior preserved.
+- Baseline performance: 4s direct vs 56s through Nexus proxy (expected
+  overhead from ngrok tunnel + proxy layer).
+- Trivy scan failed (pre-existing issue, same as test1). NOT proxy-related.

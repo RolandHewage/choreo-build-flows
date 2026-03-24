@@ -1,0 +1,22 @@
+================================================================================
+  Mirror Registry Test — Buildpack Ruby (No Proxy Baseline)
+================================================================================
+
+Pod:    build-and-deploy-20000175727
+Date:   2026-03-24
+Secret: none
+Result: PASSED
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+"Fetching gem metadata from https://rubygems.org/" — default source used.
+bundle install took 979ms from default rubygems.org (vs 7.7s through proxy).
+
+--------------------------------------------------------------------------------
+Key Findings
+--------------------------------------------------------------------------------
+- No regression when proxy secrets are absent.
+- Default Bundler behavior preserved, Gemfile source unchanged.
+- Baseline performance: 979ms direct vs ~7.7s through Nexus proxy (expected
+  overhead from ngrok tunnel + proxy layer).
