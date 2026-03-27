@@ -6,7 +6,7 @@ set -e
 # Uses Google buildpacks builder via private ACR mirror
 # (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
 #
-# VERSION: 0.1.0 — credentials come exclusively from K8s Secret volume mount
+# VERSION: 0.2.0 — credentials come exclusively from K8s Secret volume mount
 # at /mnt/proxy-config/. No env-var shims.
 #
 # Two runtime modes (auto-detected):
@@ -32,7 +32,7 @@ set -e
 
 echo "========================================"
 echo "  E2E pack build — Python pip Proxy Flow"
-echo "  v0.1.0 (K8s Secret mount only)"
+echo "  v0.2.0 (K8s Secret mount only)"
 echo "========================================"
 
 # ── Detect container runtime ─────────────────────────────────────────────────
@@ -197,7 +197,12 @@ echo "  Resolved builder   : $_BUILDER_IMAGE"
 DOCKER_HOST_FLAG=""
 [ "$RUNTIME" = "podman" ] && DOCKER_HOST_FLAG="--docker-host=inherit"
 
-BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder \"$_BUILDER_IMAGE\" --run-image=\"$_RUN_IMAGE\" --path $fullPath $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present --trust-builder"
+# GOOGLE_ENTRYPOINT is always set by Choreo control plane in real builds.
+# Without it, google.python.webserver buildpack participates and tries to
+# install gunicorn from its internal requirements.txt via PIP_INDEX_URL,
+# which fails if the proxy can't serve it. Setting GOOGLE_ENTRYPOINT skips
+# the webserver buildpack and matches the exact production flow.
+BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder \"$_BUILDER_IMAGE\" --run-image=\"$_RUN_IMAGE\" --path $fullPath --env GOOGLE_ENTRYPOINT=\"python main.py\" $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present --trust-builder"
 
 echo "Command:"
 echo "  $BUILD_CMD"
