@@ -11,12 +11,19 @@ The Python proxy flow from `buildpack-build.ts` (lines 195-206):
 - OCI image resolution via `_resolve_image` (ACR mirror rewrite)
 - Registry login via `_proxy_login`
 
+## Image versions
+
+| Version | Entrypoint | Notes |
+|---|---|---|
+| `0.2.0` | `entrypoint-0.2.0.sh` | K8s Secret mount, added `GOOGLE_ENTRYPOINT` to match production |
+| `0.3.0` | `entrypoint.sh` | Added `GOOGLE_RUNTIME_IMAGE_REGION=us` to match production flow. SDK downloads go to `us-docker.pkg.dev` instead of `dl.google.com`. |
+
 ## Build & push
 
 ```bash
 cd docker/
-docker build --platform linux/amd64 -t rolandhewage/pip-proxy-e2e:0.2.0 .
-docker push rolandhewage/pip-proxy-e2e:0.2.0
+docker build --platform linux/amd64 -t rolandhewage/pip-proxy-e2e:0.3.0 .
+docker push rolandhewage/pip-proxy-e2e:0.3.0
 ```
 
 > **Note:** Must build as `linux/amd64` — the Google buildpack Python runtime is amd64-only.
@@ -34,7 +41,7 @@ docker push rolandhewage/pip-proxy-e2e:0.2.0
 
 ---
 
-## Test scenarios — 0.2.0 (ACR builder, K8s Secret mount)
+## Test scenarios — 0.3.0 (ACR builder, K8s Secret mount, GOOGLE_RUNTIME_IMAGE_REGION=us)
 
 > All config via K8s Secret volume mount. No env vars needed. Does NOT need outbound access to `gcr.io`.
 
@@ -70,12 +77,12 @@ Verifies builds work when only ACR credentials are mounted (no pip proxy config)
 
 ```bash
 kubectl run pip-test --rm -it --restart=Never \
-  --image=rolandhewage/pip-proxy-e2e:0.2.0 \
+  --image=rolandhewage/pip-proxy-e2e:0.3.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"pip-test",
-        "image":"rolandhewage/pip-proxy-e2e:0.2.0",
+        "image":"rolandhewage/pip-proxy-e2e:0.3.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -93,12 +100,12 @@ Verifies `PIP_INDEX_URL` is passed as env var to `pack build`.
 
 ```bash
 kubectl run pip-test --rm -it --restart=Never \
-  --image=rolandhewage/pip-proxy-e2e:0.2.0 \
+  --image=rolandhewage/pip-proxy-e2e:0.3.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"pip-test",
-        "image":"rolandhewage/pip-proxy-e2e:0.2.0",
+        "image":"rolandhewage/pip-proxy-e2e:0.3.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -116,12 +123,12 @@ Verifies credentials are embedded in the `PIP_INDEX_URL` as `scheme://user:pass@
 
 ```bash
 kubectl run pip-test --rm -it --restart=Never \
-  --image=rolandhewage/pip-proxy-e2e:0.2.0 \
+  --image=rolandhewage/pip-proxy-e2e:0.3.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"pip-test",
-        "image":"rolandhewage/pip-proxy-e2e:0.2.0",
+        "image":"rolandhewage/pip-proxy-e2e:0.3.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -205,3 +212,13 @@ Added `--env GOOGLE_ENTRYPOINT="python main.py"` to match the real Choreo flow. 
 | 2a | Proxy without auth (fake URL) | PASSED — `Name or service not known` confirms PIP_INDEX_URL picked up |
 | 2b | Proxy without auth (real Nexus via ngrok) | PASSED — anonymous fetch through Nexus proxy |
 | 3 | Proxy with auth (real Nexus via ngrok) | PASSED — authenticated fetch through Nexus proxy, credentials masked in logs |
+
+### 0.3.0 (2026-04-02)
+
+Added `GOOGLE_RUNTIME_IMAGE_REGION=us` — SDK downloads go through `us-docker.pkg.dev` instead of `dl.google.com`. Added `containers.conf` fix for podman v5 `DOCKER_API_VERSION=1.44`.
+
+| # | Scenario | Result |
+|---|---|---|
+| 1 | No-proxy | PASSED — Python v3.13.12 from `us-docker.pkg.dev`, pip packages from pypi.org, build succeeded (1.96s) |
+| 2 | Proxy without auth | PASSED — Python v3.13.12 from `us-docker.pkg.dev`, pip packages through ngrok Nexus proxy without credentials |
+| 3 | Proxy with auth | PASSED — Python v3.13.12 from `us-docker.pkg.dev`, pip packages through ngrok Nexus proxy with credentials |

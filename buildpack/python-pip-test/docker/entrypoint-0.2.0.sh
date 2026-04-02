@@ -6,10 +6,7 @@ set -e
 # Uses Google buildpacks builder via private ACR mirror
 # (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
 #
-# VERSION: 0.3.0 — Added GOOGLE_RUNTIME_IMAGE_REGION=us to match production
-# flow (workflow-utils.ts line 277). SDK downloads go to us-docker.pkg.dev
-# instead of dl.google.com.
-# Credentials come exclusively from K8s Secret volume mount
+# VERSION: 0.2.0 — credentials come exclusively from K8s Secret volume mount
 # at /mnt/proxy-config/. No env-var shims.
 #
 # Two runtime modes (auto-detected):
@@ -35,7 +32,7 @@ set -e
 
 echo "========================================"
 echo "  E2E pack build — Python pip Proxy Flow"
-echo "  v0.3.0 (GOOGLE_RUNTIME_IMAGE_REGION=us)"
+echo "  v0.2.0 (K8s Secret mount only)"
 echo "========================================"
 
 # ── Detect container runtime ─────────────────────────────────────────────────
@@ -205,9 +202,7 @@ DOCKER_HOST_FLAG=""
 # install gunicorn from its internal requirements.txt via PIP_INDEX_URL,
 # which fails if the proxy can't serve it. Setting GOOGLE_ENTRYPOINT skips
 # the webserver buildpack and matches the exact production flow.
-# GOOGLE_RUNTIME_IMAGE_REGION=us matches workflow-utils.ts line 277.
-# This redirects SDK downloads from dl.google.com to us-docker.pkg.dev.
-BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder \"$_BUILDER_IMAGE\" --run-image=\"$_RUN_IMAGE\" --path $fullPath --env GOOGLE_RUNTIME_IMAGE_REGION=us --env GOOGLE_ENTRYPOINT=\"python main.py\" $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present --trust-builder"
+BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder \"$_BUILDER_IMAGE\" --run-image=\"$_RUN_IMAGE\" --path $fullPath --env GOOGLE_ENTRYPOINT=\"python main.py\" $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present --trust-builder"
 
 echo "Command:"
 echo "  $BUILD_CMD"
