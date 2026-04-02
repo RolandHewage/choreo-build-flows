@@ -19,16 +19,17 @@ The shell functions (`_proxy_val`, `_resolve_image`, `_proxy_login`, `_setup_nug
 | Version | Builder source | Entrypoint | Notes |
 |---|---|---|---|
 | `0.6.0` | `gcr.io/buildpacks/builder:google-22` | `entrypoint-0.6.0.sh` | Requires outbound access to `gcr.io` |
-| `0.11.0` | Resolved via `_resolve_image` (default: `choreoprivateacr.azurecr.io/...` → rewritten by `oci-buildpacks-url`) | `entrypoint.sh` | All config via K8s Secret mount at `/mnt/proxy-config/` |
+| `0.11.0` | Resolved via `_resolve_image` (default: `choreoprivateacr.azurecr.io/...` → rewritten by `oci-buildpacks-url`) | `entrypoint-0.11.0.sh` | All config via K8s Secret mount at `/mnt/proxy-config/` |
+| `0.12.0` | Same as 0.11.0 | `entrypoint.sh` | Added `--env GOOGLE_RUNTIME_IMAGE_REGION=us` to match production flow. SDK downloads go to `us-docker.pkg.dev` instead of `dl.google.com`. |
 
-> **Note:** The active `entrypoint.sh` (used by the Dockerfile) is the 0.11.0 version. Previous versions are preserved as `entrypoint-0.9.0.sh` and `entrypoint-0.10.0.sh` for reference.
+> **Note:** The active `entrypoint.sh` (used by the Dockerfile) is the 0.12.0 version. Previous versions are preserved as `entrypoint-0.11.0.sh` and `entrypoint-0.6.0.sh` for reference.
 
 ## Build
 
 ```bash
-# 0.11.0 — ACR builder, K8s Secret mount only
-docker build --platform linux/amd64 -t rolandhewage/nuget-proxy-e2e:0.11.0 .
-docker push rolandhewage/nuget-proxy-e2e:0.11.0
+# 0.12.0 — ACR builder, K8s Secret mount, GOOGLE_RUNTIME_IMAGE_REGION=us
+docker build --platform linux/amd64 -t rolandhewage/nuget-proxy-e2e:0.12.0 .
+docker push rolandhewage/nuget-proxy-e2e:0.12.0
 ```
 
 > **Note:** Must build as `linux/amd64` — the Google buildpack .NET SDK is amd64-only.
@@ -261,6 +262,16 @@ The builder image's embedded metadata points to `gcr.io/buildpacks/google-22/run
 | 4 | Proxy with auth (real Nexus) | PASSED — authenticated fetch through Nexus |
 
 ### 0.11.0 (PENDING)
+
+| # | Scenario | Result |
+|---|---|---|
+| 1 | No-proxy (ACR only) | PENDING |
+| 2 | Proxy without auth | PENDING |
+| 3 | Proxy with auth | PENDING |
+
+### 0.12.0 (PENDING)
+
+Same scenarios as 0.11.0 but with `GOOGLE_RUNTIME_IMAGE_REGION=us` — SDK downloads go through `us-docker.pkg.dev` instead of `dl.google.com`.
 
 | # | Scenario | Result |
 |---|---|---|
