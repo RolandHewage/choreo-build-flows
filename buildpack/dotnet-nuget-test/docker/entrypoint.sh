@@ -166,7 +166,7 @@ NGEOF
 </configuration>
 NGEOF
   fi
-  _LANG_VOLUMES="$_LANG_VOLUMES --volume /tmp/nuget-proxy-config/NuGet.Config:/workspace/NuGet.Config"
+  _LANG_VOLUMES="$_LANG_VOLUMES --volume /tmp/nuget-proxy-config/NuGet.Config:/home/cnb/.nuget/NuGet/NuGet.Config"
 }
 
 # ═════════════════════════════════════════════════════════════════════════════

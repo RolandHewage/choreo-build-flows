@@ -1,6 +1,6 @@
 # NuGet Proxy E2E Test Image
 
-E2E test for the buildpack NuGet proxy flow. Verifies that `dotnet restore` inside a Google Cloud Buildpack `pack build` picks up a proxy NuGet.Config mounted at `/workspace/NuGet.Config`.
+E2E test for the buildpack NuGet proxy flow. Verifies that `dotnet restore` inside a Google Cloud Buildpack `pack build` picks up a proxy NuGet.Config mounted at `/home/cnb/.nuget/NuGet/NuGet.Config`.
 
 ## What it tests
 
@@ -8,7 +8,7 @@ This image replicates the Choreo buildpack build flow:
 1. Starts podman (or uses Docker socket)
 2. Reads proxy config from `/mnt/proxy-config/` (K8s Secret volume mount)
 3. Generates `NuGet.Config` with proxy source (and credentials if provided)
-4. Runs `pack build` with `--volume .../NuGet.Config:/workspace/NuGet.Config`
+4. Runs `pack build` with `--volume .../NuGet.Config:/home/cnb/.nuget/NuGet/NuGet.Config`
 5. Google buildpack detects .NET project
 6. `dotnet restore` picks up the mounted NuGet.Config and fetches packages through the proxy
 
@@ -20,7 +20,7 @@ The shell functions (`_proxy_val`, `_resolve_image`, `_proxy_login`, `_setup_nug
 |---|---|---|---|
 | `0.6.0` | `gcr.io/buildpacks/builder:google-22` | `entrypoint-0.6.0.sh` | Requires outbound access to `gcr.io` |
 | `0.11.0` | Resolved via `_resolve_image` (default: `choreoprivateacr.azurecr.io/...` → rewritten by `oci-buildpacks-url`) | `entrypoint-0.11.0.sh` | All config via K8s Secret mount at `/mnt/proxy-config/` |
-| `0.12.0` | Same as 0.11.0 | `entrypoint.sh` | Added `--env GOOGLE_RUNTIME_IMAGE_REGION=us` to match production flow. SDK downloads go to `us-docker.pkg.dev` instead of `dl.google.com`. |
+| `0.12.0` | Same as 0.11.0 | `entrypoint.sh` | Added `--env GOOGLE_RUNTIME_IMAGE_REGION=us` to match production flow. Fixed NuGet.Config mount path to `/home/cnb/.nuget/NuGet/NuGet.Config` (matching PR #2495). |
 
 > **Note:** The active `entrypoint.sh` (used by the Dockerfile) is the 0.12.0 version. Previous versions are preserved as `entrypoint-0.11.0.sh` and `entrypoint-0.6.0.sh` for reference.
 
@@ -45,9 +45,9 @@ docker push rolandhewage/nuget-proxy-e2e:0.12.0
 | `PROXY_NUGET_PASSWORD` | NuGet proxy password | Scenario 3 only |
 | `BUILDER` | Override builder image | No (default: `gcr.io/buildpacks/builder:google-22`) |
 
-### 0.11.0 — no env vars needed
+### 0.12.0 — no env vars needed
 
-All configuration is provided via K8s Secret volume mount at `/mnt/proxy-config/`. See [Test scenarios — 0.11.0](#test-scenarios--0100-acr-builder-k8s-secret-mount) below for how to create the secret and mount it.
+All configuration is provided via K8s Secret volume mount at `/mnt/proxy-config/`. See [Test scenarios — 0.12.0](#test-scenarios--0120-acr-builder-k8s-secret-mount) below for how to create the secret and mount it.
 
 Builder and run images start as `choreoprivateacr.azurecr.io/...` (PDP defaults) and are resolved through `_resolve_image` using `oci-buildpacks-url` from the K8s Secret — matching the production flow in `buildpack-build.ts`.
 
@@ -95,7 +95,7 @@ kubectl run nuget-test --rm -it --restart=Never \
 
 ---
 
-## Test scenarios — 0.11.0 (ACR builder, K8s Secret mount)
+## Test scenarios — 0.12.0 (ACR builder, K8s Secret mount)
 
 > All config via K8s Secret volume mount. No env vars needed. Does NOT need outbound access to `gcr.io`.
 
@@ -131,12 +131,12 @@ Verifies builds work when only ACR credentials are mounted (no NuGet proxy confi
 
 ```bash
 kubectl run nuget-test --rm -it --restart=Never \
-  --image=rolandhewage/nuget-proxy-e2e:0.11.0 \
+  --image=rolandhewage/nuget-proxy-e2e:0.12.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"nuget-test",
-        "image":"rolandhewage/nuget-proxy-e2e:0.11.0",
+        "image":"rolandhewage/nuget-proxy-e2e:0.12.0",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
       }],
@@ -153,12 +153,12 @@ Verifies NuGet.Config is generated and picked up by `dotnet restore`.
 
 ```bash
 kubectl run nuget-test --rm -it --restart=Never \
-  --image=rolandhewage/nuget-proxy-e2e:0.11.0 \
+  --image=rolandhewage/nuget-proxy-e2e:0.12.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"nuget-test",
-        "image":"rolandhewage/nuget-proxy-e2e:0.11.0",
+        "image":"rolandhewage/nuget-proxy-e2e:0.12.0",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
       }],
@@ -175,12 +175,12 @@ Verifies NuGet.Config includes `<packageSourceCredentials>` with username/passwo
 
 ```bash
 kubectl run nuget-test --rm -it --restart=Never \
-  --image=rolandhewage/nuget-proxy-e2e:0.11.0 \
+  --image=rolandhewage/nuget-proxy-e2e:0.12.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"nuget-test",
-        "image":"rolandhewage/nuget-proxy-e2e:0.11.0",
+        "image":"rolandhewage/nuget-proxy-e2e:0.12.0",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
       }],
@@ -228,7 +228,7 @@ Use normal Nexus user credentials (username/password). NuGet also supports API k
 
 To require authentication: Nexus UI → **Settings** → **Security** → **Anonymous** → disable **Allow anonymous access**.
 
-The CICD generates a `NuGet.Config` XML file with `<packageSourceCredentials>` and mounts it at `/workspace/NuGet.Config` via `_LANG_VOLUMES`.
+The CICD generates a `NuGet.Config` XML file with `<packageSourceCredentials>` and mounts it at `/home/cnb/.nuget/NuGet/NuGet.Config` via `_LANG_VOLUMES`.
 
 ## What to check in logs
 
@@ -237,14 +237,14 @@ The CICD generates a `NuGet.Config` XML file with `<packageSourceCredentials>` a
 | Proxy config files listed | After `Proxy config (/mnt/proxy-config/)` |
 | Images resolved correctly | After `Resolve images via _resolve_image` — original `choreoprivateacr.azurecr.io/...` → resolved to mirror |
 | NuGet.Config generated correctly | After `Generated NuGet.Config:` |
-| Volume mount path is correct | `_LANG_VOLUMES` should show `:/workspace/NuGet.Config` |
+| Volume mount path is correct | `_LANG_VOLUMES` should show `:/home/cnb/.nuget/NuGet/NuGet.Config` |
 | ACR login succeeded | After `Logging into proxy mirror:` |
 | `dotnet restore` uses proxy | During BUILDING phase — should show proxy URL, NOT nuget.org |
 | Build completes | `E2E TEST PASSED` at the end |
 
 ## Key finding: mount path
 
-The NuGet.Config must be mounted at `/workspace/NuGet.Config` (solution-level), NOT `/workspace/.nuget/NuGet/NuGet.Config`. The Google buildpack builder sets `HOME=/home/cnb`, so the user-level config path (`~/.nuget/NuGet/NuGet.Config`) resolves to `/home/cnb/.nuget/NuGet/NuGet.Config`, not `/workspace/.nuget/...`.
+The NuGet.Config must be mounted at `/home/cnb/.nuget/NuGet/NuGet.Config` (user-level config). The Google buildpack builder sets `HOME=/home/cnb`, so `~/.nuget/NuGet/NuGet.Config` resolves to this path. The old mount path `/workspace/NuGet.Config` caused buildpack exporter permission errors (fixed in PR #2495).
 
 ## Key finding: run image resolution
 
@@ -269,12 +269,12 @@ The builder image's embedded metadata points to `gcr.io/buildpacks/google-22/run
 | 2 | Proxy without auth | PENDING |
 | 3 | Proxy with auth | PENDING |
 
-### 0.12.0 (PENDING)
+### 0.12.0 (2026-04-02)
 
-Same scenarios as 0.11.0 but with `GOOGLE_RUNTIME_IMAGE_REGION=us` — SDK downloads go through `us-docker.pkg.dev` instead of `dl.google.com`.
+Added `GOOGLE_RUNTIME_IMAGE_REGION=us` and fixed NuGet.Config mount path to `/home/cnb/.nuget/NuGet/NuGet.Config`.
 
 | # | Scenario | Result |
 |---|---|---|
-| 1 | No-proxy (ACR only) | PENDING |
-| 2 | Proxy without auth | PENDING |
-| 3 | Proxy with auth | PENDING |
+| 1 | No-proxy (ACR only) | PASSED — SDK from `us-docker.pkg.dev`, NuGet from nuget.org |
+| 2 | Proxy without auth | PASSED — SDK from `us-docker.pkg.dev`, NuGet through Nexus proxy |
+| 3 | Proxy with auth | PASSED — SDK from `us-docker.pkg.dev`, NuGet through Nexus proxy with credentials |
