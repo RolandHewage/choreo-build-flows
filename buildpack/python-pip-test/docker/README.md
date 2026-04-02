@@ -15,8 +15,8 @@ The Python proxy flow from `buildpack-build.ts` (lines 195-206):
 
 ```bash
 cd docker/
-docker build --platform linux/amd64 -t rolandhewage/pip-proxy-e2e:0.1.0 .
-docker push rolandhewage/pip-proxy-e2e:0.1.0
+docker build --platform linux/amd64 -t rolandhewage/pip-proxy-e2e:0.2.0 .
+docker push rolandhewage/pip-proxy-e2e:0.2.0
 ```
 
 > **Note:** Must build as `linux/amd64` — the Google buildpack Python runtime is amd64-only.
@@ -34,7 +34,7 @@ docker push rolandhewage/pip-proxy-e2e:0.1.0
 
 ---
 
-## Test scenarios — 0.1.0 (ACR builder, K8s Secret mount)
+## Test scenarios — 0.2.0 (ACR builder, K8s Secret mount)
 
 > All config via K8s Secret volume mount. No env vars needed. Does NOT need outbound access to `gcr.io`.
 
@@ -70,12 +70,12 @@ Verifies builds work when only ACR credentials are mounted (no pip proxy config)
 
 ```bash
 kubectl run pip-test --rm -it --restart=Never \
-  --image=rolandhewage/pip-proxy-e2e:0.1.0 \
+  --image=rolandhewage/pip-proxy-e2e:0.2.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"pip-test",
-        "image":"rolandhewage/pip-proxy-e2e:0.1.0",
+        "image":"rolandhewage/pip-proxy-e2e:0.2.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -93,12 +93,12 @@ Verifies `PIP_INDEX_URL` is passed as env var to `pack build`.
 
 ```bash
 kubectl run pip-test --rm -it --restart=Never \
-  --image=rolandhewage/pip-proxy-e2e:0.1.0 \
+  --image=rolandhewage/pip-proxy-e2e:0.2.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"pip-test",
-        "image":"rolandhewage/pip-proxy-e2e:0.1.0",
+        "image":"rolandhewage/pip-proxy-e2e:0.2.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -116,12 +116,12 @@ Verifies credentials are embedded in the `PIP_INDEX_URL` as `scheme://user:pass@
 
 ```bash
 kubectl run pip-test --rm -it --restart=Never \
-  --image=rolandhewage/pip-proxy-e2e:0.1.0 \
+  --image=rolandhewage/pip-proxy-e2e:0.2.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"pip-test",
-        "image":"rolandhewage/pip-proxy-e2e:0.1.0",
+        "image":"rolandhewage/pip-proxy-e2e:0.2.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -195,7 +195,9 @@ The CICD embeds credentials directly in the URL as `scheme://user:pass@host/path
 
 ## Test results
 
-### 0.1.0 (2026-03-04)
+### 0.2.0
+
+Added `--env GOOGLE_ENTRYPOINT="python main.py"` to match the real Choreo flow. Without it, the `google.python.webserver` buildpack tries to install gunicorn via `PIP_INDEX_URL`, which fails if the proxy can't serve it.
 
 | # | Scenario | Result |
 |---|---|---|
