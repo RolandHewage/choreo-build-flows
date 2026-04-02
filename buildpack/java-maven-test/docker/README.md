@@ -15,10 +15,17 @@ The Maven proxy flow from `buildpack-build.ts` + `workflow-resources.ts`:
 
 ## Build & push
 
+## Image versions
+
+| Version | Entrypoint | Notes |
+|---|---|---|
+| `0.1.0` | `entrypoint-0.1.0.sh` | K8s Secret mount, Maven binding at `/maven-settings/settings.xml` |
+| `0.2.0` | `entrypoint.sh` | Added `GOOGLE_RUNTIME_IMAGE_REGION=us`. Fixed Maven binding to `/platform/bindings/maven-settings` with `type` file (matching production). |
+
 ```bash
 cd docker/
-docker build --platform linux/amd64 -t rolandhewage/maven-proxy-e2e:0.1.0 .
-docker push rolandhewage/maven-proxy-e2e:0.1.0
+docker build --platform linux/amd64 -t rolandhewage/maven-proxy-e2e:0.2.0 .
+docker push rolandhewage/maven-proxy-e2e:0.2.0
 ```
 
 > **Note:** Must build as `linux/amd64` — the Google buildpack Java runtime is amd64-only.
@@ -36,7 +43,7 @@ docker push rolandhewage/maven-proxy-e2e:0.1.0
 
 ---
 
-## Test scenarios — 0.1.0 (ACR builder, K8s Secret mount)
+## Test scenarios — 0.2.0 (ACR builder, K8s Secret mount, GOOGLE_RUNTIME_IMAGE_REGION=us)
 
 > All config via K8s Secret volume mount. No env vars needed.
 
@@ -72,12 +79,12 @@ Verifies builds work when only ACR credentials are mounted (no Maven proxy confi
 
 ```bash
 kubectl run maven-test --rm -it --restart=Never \
-  --image=rolandhewage/maven-proxy-e2e:0.1.0 \
+  --image=rolandhewage/maven-proxy-e2e:0.2.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"maven-test",
-        "image":"rolandhewage/maven-proxy-e2e:0.1.0",
+        "image":"rolandhewage/maven-proxy-e2e:0.2.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -95,12 +102,12 @@ Verifies `settings.xml` is generated with `<mirror>` pointing to proxy URL.
 
 ```bash
 kubectl run maven-test --rm -it --restart=Never \
-  --image=rolandhewage/maven-proxy-e2e:0.1.0 \
+  --image=rolandhewage/maven-proxy-e2e:0.2.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"maven-test",
-        "image":"rolandhewage/maven-proxy-e2e:0.1.0",
+        "image":"rolandhewage/maven-proxy-e2e:0.2.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -124,12 +131,12 @@ Verifies `settings.xml` includes `<servers>` section with username/password.
 
 ```bash
 kubectl run maven-test --rm -it --restart=Never \
-  --image=rolandhewage/maven-proxy-e2e:0.1.0 \
+  --image=rolandhewage/maven-proxy-e2e:0.2.0 \
   --overrides='{
     "spec":{
       "containers":[{
         "name":"maven-test",
-        "image":"rolandhewage/maven-proxy-e2e:0.1.0",
+        "image":"rolandhewage/maven-proxy-e2e:0.2.0",
         "imagePullPolicy":"Always",
         "securityContext":{"privileged":true},
         "volumeMounts":[{"name":"proxy-config","mountPath":"/mnt/proxy-config","readOnly":true}]
@@ -260,3 +267,13 @@ The same one-line fix needs to be applied to the production Dockerfile.
 | 2b | Proxy (real Nexus, no auth) | PASSED — Maven deps fetched through ngrok → local Nexus proxy (`fafe-203-94-95-14.ngrok-free.app`), build succeeded (1m31s vs 23s no-proxy due to ngrok latency) |
 | 3a | Proxy + auth (fake URL) | PASSED — `settings.xml` with `<mirror>` + `<servers>` generated, Maven tried `proxy-mirror (https://your-proxy/repository/maven-proxy/)`, DNS failed as expected |
 | 3b | Proxy + auth (real Nexus) | PASSED — Maven deps fetched through authenticated ngrok → local Nexus proxy, `settings.xml` with `<mirror>` + `<servers>`, build succeeded (1m4s) |
+
+### 0.2.0 (2026-04-02)
+
+Added `GOOGLE_RUNTIME_IMAGE_REGION=us` and fixed Maven binding path to `/platform/bindings/maven-settings` with `type` file.
+
+| # | Scenario | Result |
+|---|---|---|
+| 1 | No-proxy | PASSED — JDK v21.0.10 (`canonicaljdk`) from `us-docker.pkg.dev`, Maven v3.9.11 from `archive.apache.org`, deps from Maven Central, build succeeded (6.5s) |
+| 2 | Proxy (real Nexus, no auth) | PASSED — JDK v21.0.10 (`canonicaljdk`) from `us-docker.pkg.dev`, Maven v3.9.11 from `archive.apache.org`, deps through ngrok Nexus proxy (2m21s), `--settings=/platform/bindings/maven-settings/settings.xml` confirmed |
+| 3 | Proxy + auth (real Nexus) | PASSED — JDK v21.0.10 (`canonicaljdk`) from `us-docker.pkg.dev`, Maven v3.9.11 from `archive.apache.org`, deps through ngrok Nexus proxy, `--settings=/platform/bindings/maven-settings/settings.xml` confirmed |

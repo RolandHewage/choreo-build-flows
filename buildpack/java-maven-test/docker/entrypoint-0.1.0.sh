@@ -6,10 +6,7 @@ set -e
 # Uses Google buildpacks builder via private ACR mirror
 # (choreoprivateacr.azurecr.io/buildpacks/builder:google-22)
 #
-# VERSION: 0.2.0 — Added GOOGLE_RUNTIME_IMAGE_REGION=us to match production
-# flow (workflow-utils.ts line 277). Fixed Maven binding path to match
-# production: /platform/bindings/maven-settings with type file.
-# Credentials come exclusively from K8s Secret volume mount
+# VERSION: 0.1.0 — credentials come exclusively from K8s Secret volume mount
 # at /mnt/proxy-config/. No env-var shims.
 #
 # Two runtime modes (auto-detected):
@@ -39,15 +36,15 @@ set -e
 #   The settings.xml is volume-mounted into the build container and passed
 #   via GOOGLE_BUILD_ARGS=--settings=<path>.
 #
-#   Production mounts settings.xml as a CNB binding dir at
-#   /platform/bindings/maven-settings (with type file) and also passes
-#   GOOGLE_BUILD_ARGS=--settings=/platform/bindings/maven-settings/settings.xml
-#   to tell the Google Maven buildpack where to find it.
+#   NOTE: Google buildpacks do NOT support CNB service bindings.
+#   The google.java.maven buildpack uses GOOGLE_BUILD_ARGS to append
+#   extra arguments to the mvn command. This is different from Paketo
+#   buildpacks which use /platform/bindings/<name>/type + settings.xml.
 # =============================================================================
 
 echo "========================================"
 echo "  E2E pack build — Maven Proxy Flow"
-echo "  v0.2.0 (GOOGLE_RUNTIME_IMAGE_REGION=us, fixed Maven binding)"
+echo "  v0.1.0 (K8s Secret mount)"
 echo "========================================"
 
 # ── Detect container runtime ─────────────────────────────────────────────────
@@ -155,9 +152,8 @@ _setup_maven_proxy() {
   [ -z "$url" ] && return
   local user=$(_proxy_val "$strategy" pkg-maven-username)
   local pass=$(_proxy_val "$strategy" pkg-maven-password)
-  mkdir -p /tmp/maven-proxy-binding
-  echo "maven" > /tmp/maven-proxy-binding/type
-  cat > /tmp/maven-proxy-binding/settings.xml <<MVNEOF
+  mkdir -p /tmp/maven-settings
+  cat > /tmp/maven-settings/settings.xml <<MVNEOF
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <mirrors>
@@ -180,10 +176,9 @@ AUTHEOF
 fi)
 </settings>
 MVNEOF
-  # Mount binding dir into build container and tell Google Maven buildpack to use it
-  # (matches production workflow-resources.ts: dir mount with type file at /platform/bindings/maven-settings)
-  _MAVEN_BINDING="--volume /tmp/maven-proxy-binding:/platform/bindings/maven-settings"
-  _LANG_ENV="$_LANG_ENV --env GOOGLE_BUILD_ARGS=--settings=/platform/bindings/maven-settings/settings.xml"
+  # Mount settings.xml into build container and tell Google Maven buildpack to use it
+  _MAVEN_BINDING="--volume /tmp/maven-settings/settings.xml:/maven-settings/settings.xml"
+  _LANG_ENV="$_LANG_ENV --env GOOGLE_BUILD_ARGS=--settings=/maven-settings/settings.xml"
 }
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -209,10 +204,10 @@ echo "_LANG_VOLUMES  = '$_LANG_VOLUMES'"
 echo "_MAVEN_BINDING = '$_MAVEN_BINDING'"
 
 # Show settings.xml if generated (mask password)
-if [ -f /tmp/maven-proxy-binding/settings.xml ]; then
+if [ -f /tmp/maven-settings/settings.xml ]; then
   echo ""
   echo "── Generated settings.xml ──────────────────────────────────"
-  sed 's|<password>.*</password>|<password>****</password>|' /tmp/maven-proxy-binding/settings.xml | sed 's/^/    /'
+  sed 's|<password>.*</password>|<password>****</password>|' /tmp/maven-settings/settings.xml | sed 's/^/    /'
 fi
 
 # ── pack build ───────────────────────────────────────────────────────────────
@@ -246,9 +241,7 @@ pack config lifecycle-image "$_LIFECYCLE_IMAGE"
 DOCKER_HOST_FLAG=""
 [ "$RUNTIME" = "podman" ] && DOCKER_HOST_FLAG="--docker-host=inherit"
 
-# GOOGLE_RUNTIME_IMAGE_REGION=us matches workflow-utils.ts line 277.
-# This redirects SDK downloads from dl.google.com to us-docker.pkg.dev.
-BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder \"$_BUILDER_IMAGE\" --run-image=\"$_RUN_IMAGE\" --env GOOGLE_RUNTIME_IMAGE_REGION=us --path $fullPath $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present"
+BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG --builder \"$_BUILDER_IMAGE\" --run-image=\"$_RUN_IMAGE\" --env DOCKER_API_VERSION=1.44 --path $fullPath $_LANG_ENV $_LANG_VOLUMES $_MAVEN_BINDING --pull-policy if-not-present"
 
 echo "Command:"
 echo "  $BUILD_CMD"
