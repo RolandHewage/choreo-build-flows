@@ -33,7 +33,7 @@ set -e
 #   _resolve_image rewrites them via oci-buildpacks-url from the K8s Secret.
 #
 # Ballerina build env vars (matching ballerina-build.ts):
-#   BALLERINA_DEV_CENTRAL=true  — use dev Ballerina Central
+#   BALLERINA_PROD_CENTRAL=true  — use production Ballerina Central (api.central.ballerina.io)
 #   OTHER_BAL_BUILD_ARGS=--cloud=k8s — generate K8s artifacts
 #   DISABLE_BAL_OBSERVABILITY=true — disable observability
 #   BUILD_PATH=. — build from project root
@@ -195,7 +195,7 @@ DOCKER_HOST_FLAG=""
 BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG \
   --builder \"$_BUILDER_IMAGE\" \
   --path $fullPath \
-  --env BALLERINA_DEV_CENTRAL=true \
+  --env BALLERINA_PROD_CENTRAL=true \
   --env 'OTHER_BAL_BUILD_ARGS=' \
   --env DISABLE_BAL_OBSERVABILITY=true \
   --env BUILD_PATH=. \
