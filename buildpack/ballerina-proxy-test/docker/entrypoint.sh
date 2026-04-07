@@ -155,16 +155,20 @@ echo "── Resolve images via _resolve_image ───────────
 # _resolve_image will rewrite these via oci-buildpacks-url from the K8s Secret.
 # Lifecycle: choreocontrolplane.azurecr.io/buildpacksio/lifecycle:0.19.6 → PDP rewrite
 # Builder: choreocontrolplane.azurecr.io/choreoipaas/choreo-buildpacks/builder:0.2.78 → PDP rewrite
-_ORIGINAL_LIFECYCLE="choreoprivateacr.azurecr.io/buildpacksio/lifecycle:0.19.6"
-_ORIGINAL_BUILDER="choreoprivateacr.azurecr.io/choreoipaas/choreo-buildpacks/builder:0.2.78"
+_ORIGINAL_LIFECYCLE="choreoprivateacr.azurecr.io/buildpacksio/lifecycle:0.20.2"
+_ORIGINAL_BUILDER="choreoprivateacr.azurecr.io/choreoipaas/choreo-buildpacks/builder:0.2.83"
+_ORIGINAL_RUN_IMAGE="choreoprivateacr.azurecr.io/choreoipaas/choreo-buildpacks/stacks/alpine/run:0.2.83"
 
 _LIFECYCLE_IMAGE=$(_resolve_image ballerina image-buildpacks-lifecycle-ref oci-buildpacks-url "$_ORIGINAL_LIFECYCLE")
 _BUILDER_IMAGE=$(_resolve_image ballerina image-buildpacks-builder-ref oci-buildpacks-url "$_ORIGINAL_BUILDER")
+_RUN_IMAGE=$(_resolve_image ballerina image-buildpacks-run-ref oci-buildpacks-url "$_ORIGINAL_RUN_IMAGE")
 
 echo "  Original lifecycle : $_ORIGINAL_LIFECYCLE"
 echo "  Resolved lifecycle : $_LIFECYCLE_IMAGE"
 echo "  Original builder   : $_ORIGINAL_BUILDER"
 echo "  Resolved builder   : $_BUILDER_IMAGE"
+echo "  Original run image : $_ORIGINAL_RUN_IMAGE"
+echo "  Resolved run image : $_RUN_IMAGE"
 
 # ── pack config lifecycle-image (unique to Ballerina) ─────────────────────
 echo ""
@@ -194,6 +198,7 @@ DOCKER_HOST_FLAG=""
 # For E2E proxy validation, we skip --cloud=k8s since it's not relevant to proxy flow.
 BUILD_CMD="pack build $IMAGE $DOCKER_HOST_FLAG \
   --builder \"$_BUILDER_IMAGE\" \
+  --run-image=\"$_RUN_IMAGE\" \
   --path $fullPath \
   --env BALLERINA_PROD_CENTRAL=true \
   --env 'OTHER_BAL_BUILD_ARGS=' \
