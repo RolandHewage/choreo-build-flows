@@ -56,6 +56,10 @@ This rewrites `node:18-alpine` → `your-mirror/docker-hub-proxy/library/node:18
 `choreoanonymouspullable.azurecr.io/nginxinc/...` → `your-mirror/choreo-acr-proxy/nginxinc/...`,
 allowing the build to pull all images from the internal mirror.
 
+**Important:**
+- `oci-dockerhub-url` **must** include `library/` — Docker Hub official images (like `node`) are under the `library/` namespace. Nexus Docker proxy does not add this implicitly. Example: `oci-dockerhub-url=nexusrepo.example.com/docker-proxy/library`
+- `oci-choreo-url` must **NOT** include `library/` — the nginx image (`nginxinc/nginx-unprivileged`) is an org image, not an official image. It already has its namespace. Example: `oci-choreo-url=nexusrepo.example.com/docker-proxy`
+
 ---
 
 ## Test scenarios — 0.1.0 (K8s Secret mount)
@@ -235,6 +239,16 @@ ngrok http 8081
 | 2a | Proxy without auth (fake URL) | PASSED (expected `ENOTFOUND` failure confirms proxy redirect) |
 | 2b | Proxy without auth (real Nexus via ngrok) | PASSED |
 | 3 | Proxy with token auth (real Nexus via ngrok) | PASSED |
+
+### 0.1.0 — with Docker Hub mirror (2026-04-07)
+
+Tested with `oci-dockerhub-url` pointing to Nexus Docker Hub proxy with `library/` path.
+
+| # | Scenario | Result |
+|---|---|---|
+| 1 | Proxy with auth + Docker Hub mirror | PASSED — node:18-alpine pulled from ngrok Nexus Docker proxy (`docker-hub-proxy/library/node:18-alpine`), nginx from `choreoanonymouspullable.azurecr.io`, npm packages through ngrok Nexus npm proxy |
+
+**Key finding:** `oci-dockerhub-url` must include `library/` suffix for Nexus Docker proxy (e.g., `nexusrepo.example.com/docker-hub-proxy/library`).
 
 #### Bugs found during Angular/Vue testing (also apply to React)
 

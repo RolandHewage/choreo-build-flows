@@ -59,6 +59,10 @@ This rewrites `node:18-alpine` → `your-mirror/docker-hub-proxy/library/node:18
 `choreoanonymouspullable.azurecr.io/nginxinc/...` → `your-mirror/choreo-acr-proxy/nginxinc/...`,
 allowing the build to pull all images from the internal mirror.
 
+**Important:**
+- `oci-dockerhub-url` **must** include `library/` — Docker Hub official images (like `node`) are under the `library/` namespace. Nexus Docker proxy does not add this implicitly. Example: `oci-dockerhub-url=nexusrepo.example.com/docker-proxy/library`
+- `oci-choreo-url` must **NOT** include `library/` — the nginx image (`nginxinc/nginx-unprivileged`) is an org image, not an official image. It already has its namespace. Example: `oci-choreo-url=nexusrepo.example.com/docker-proxy`
+
 ---
 
 ## Test scenarios — 0.1.0 (K8s Secret mount)
