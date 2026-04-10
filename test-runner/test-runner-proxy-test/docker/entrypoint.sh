@@ -4,6 +4,7 @@ set -e
 # =============================================================================
 # E2E test of Test Runner proxy flow with actual podman build.
 # Replicates the Choreo test runner build flow from test-runner-build.ts:
+#   - Conditionally performs Docker Hub login (skipped when proxy is configured)
 #   - OCI image resolution via _resolve_image() with strategy "test-runner"
 #   - One image: Node.js (resolved via oci-dockerhub-url)
 #   - Registry login via _proxy_login test-runner
@@ -11,7 +12,8 @@ set -e
 #   - podman build with resolved Node image
 #
 # VERSION: 0.1.0 — credentials come exclusively from K8s Secret volume mount
-# at /mnt/proxy-config/. No env-var shims.
+# at /mnt/proxy-config/. No env-var shims. Includes conditional Docker Hub
+# login matching test-runner-build.ts for restricted/airgapped clusters.
 #
 # Sample app: Postman collection (based on wso2/choreo-samples/test-runner-postman)
 #   - Dockerfile matches generated output from test-runner.service.ts
@@ -159,6 +161,23 @@ _proxy_login() {
 # Execute flow (same order as test-runner-build.ts scriptSource lines 60-81)
 # Strategy: "test-runner"
 # ═════════════════════════════════════════════════════════════════════════════
+
+echo ""
+echo "── Docker Hub login (matching test-runner-build.ts production) ──"
+# Skip Docker Hub login when a dockerhub proxy mirror is configured.
+# This is the fix for restricted/airgapped clusters where index.docker.io
+# is blocked — the original test-runner-build.ts always ran this login
+# unconditionally, causing builds to fail before reaching the proxy logic.
+if [ -z "$(_proxy_val test-runner oci-dockerhub-url)" ]; then
+  echo "No dockerhub proxy configured — logging into Docker Hub"
+  if [ -n "$DOCKER_USER_NAME" ] && [ -n "$DOCKER_USER_PASSWORD" ]; then
+    $RUNTIME login "${DOCKER_REGISTRY:-https://index.docker.io/v1/}" -u "$DOCKER_USER_NAME" -p "$DOCKER_USER_PASSWORD"
+  else
+    echo "  DOCKER_USER_NAME/PASSWORD not set — skipping (test mode)"
+  fi
+else
+  echo "Dockerhub proxy configured — skipping Docker Hub login"
+fi
 
 echo ""
 echo "── Proxy login ─────────────────────────────────────────────"

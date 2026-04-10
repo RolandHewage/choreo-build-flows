@@ -4,13 +4,15 @@ set -e
 # =============================================================================
 # E2E test of webapp npm proxy flow with actual podman build.
 # Replicates the Choreo webapp build flow from webapp-build.ts:
+#   - Conditionally performs Docker Hub login (skipped when proxy is configured)
 #   - Resolves proxy images (node, nginx) via _resolve_image()
 #   - Conditionally passes --build-arg flags only when values differ from defaults
 #   - Injects .npmrc as Docker build secret for npm token auth
 #   - Runs podman build with the generated Dockerfile
 #
 # VERSION: 0.1.0 — credentials come exclusively from K8s Secret volume mount
-# at /mnt/proxy-config/. No env-var shims.
+# at /mnt/proxy-config/. No env-var shims. Includes conditional Docker Hub
+# login matching webapp-build.ts for restricted/airgapped clusters.
 #
 # Two runtime modes (auto-detected):
 #   LOCAL   — Docker socket mounted at /var/run/docker.sock
@@ -136,6 +138,23 @@ _proxy_login() {
 # ═════════════════════════════════════════════════════════════════════════════
 # Execute flow (same order as webapp-build.ts scriptSource lines 67-84)
 # ═════════════════════════════════════════════════════════════════════════════
+
+echo ""
+echo "── Docker Hub login (matching webapp-build.ts production) ──"
+# Skip Docker Hub login when a dockerhub proxy mirror is configured.
+# This is the fix for restricted/airgapped clusters where index.docker.io
+# is blocked — the original webapp-build.ts always ran this login
+# unconditionally, causing builds to fail before reaching the proxy logic.
+if [ -z "$(_proxy_val webapp oci-dockerhub-url)" ]; then
+  echo "No dockerhub proxy configured — logging into Docker Hub"
+  if [ -n "$DOCKER_USER_NAME" ] && [ -n "$DOCKER_USER_PASSWORD" ]; then
+    $RUNTIME login "${DOCKER_REGISTRY:-https://index.docker.io/v1/}" -u "$DOCKER_USER_NAME" -p "$DOCKER_USER_PASSWORD"
+  else
+    echo "  DOCKER_USER_NAME/PASSWORD not set — skipping (test mode)"
+  fi
+else
+  echo "Dockerhub proxy configured — skipping Docker Hub login"
+fi
 
 echo ""
 echo "── Proxy login ─────────────────────────────────────────────"
