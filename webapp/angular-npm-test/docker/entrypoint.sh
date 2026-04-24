@@ -185,13 +185,20 @@ _BUILD_ARGS=""
 [ "$_NGINX_IMAGE" != "$_NGINX_DEFAULT" ] && _BUILD_ARGS="$_BUILD_ARGS --build-arg NGINX_IMAGE=$_NGINX_IMAGE"
 [ -n "$_NPM_URL" ] && _BUILD_ARGS="$_BUILD_ARGS --build-arg NPM_REGISTRY=$_NPM_URL"
 
-# Always create .npmrc and pass as BuildKit secret (empty if no token)
+# Always create .npmrc and pass as BuildKit secret (matches webapp-build.ts)
+# Writing BOTH registry URL and auth token ensures pnpm install (with secret mounted)
+# uses the proxy in restricted clusters, not the default registry.npmjs.org.
 touch /tmp/.npmrc
-if [ -n "$_NPM_TOKEN" ] && [ -n "$_NPM_URL" ]; then
-  _NPM_NOSCHEME="${_NPM_URL#*://}"
-  _NPM_HOST="${_NPM_NOSCHEME%%/*}"
-  echo "//${_NPM_HOST}/:_authToken=${_NPM_TOKEN}" > /tmp/.npmrc
-  echo "  Generated /tmp/.npmrc for host: $_NPM_HOST"
+if [ -n "$_NPM_URL" ]; then
+  echo "registry=${_NPM_URL}" > /tmp/.npmrc
+  if [ -n "$_NPM_TOKEN" ]; then
+    _NPM_NOSCHEME="${_NPM_URL#*://}"
+    _NPM_HOST="${_NPM_NOSCHEME%%/*}"
+    echo "//${_NPM_HOST}/:_authToken=${_NPM_TOKEN}" >> /tmp/.npmrc
+    echo "  Generated /tmp/.npmrc with registry=${_NPM_URL} + auth token for host: $_NPM_HOST"
+  else
+    echo "  Generated /tmp/.npmrc with registry=${_NPM_URL} (no token)"
+  fi
 fi
 _BUILD_ARGS="$_BUILD_ARGS --secret id=npmrc,src=/tmp/.npmrc"
 

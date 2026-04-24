@@ -1,7 +1,10 @@
 ARG NODE_IMAGE=node:18-alpine
 ARG NGINX_IMAGE=choreoanonymouspullable.azurecr.io/nginxinc/nginx-unprivileged:stable-alpine-slim
 FROM $NODE_IMAGE as builder
-RUN npm install -g pnpm
+# Mount .npmrc secret so pnpm install works against auth-required proxy registries
+# in restricted clusters (where the default registry.npmjs.org is blocked).
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    npm install -g pnpm
 ARG NPM_REGISTRY
 RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
 WORKDIR /app
